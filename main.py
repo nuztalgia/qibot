@@ -1,4 +1,5 @@
-from discord import Activity, ActivityType, Bot, Cog, Intents
+from discord import Activity, ActivityType, AllowedMentions, Cog, Intents
+from discord.ext.commands import Bot
 
 from lib.common import Constants, Log
 from lib.registry import CogRegistry
@@ -36,7 +37,13 @@ if __name__ == "__main__":
     intents.members = True
     intents.message_content = True
 
-    qi_bot = Bot(intents=intents)
+    qi_bot = Bot(
+        allowed_mentions=AllowedMentions.none(),
+        case_insensitive=True,
+        command_prefix=Constants.COMMAND_PREFIX,
+        help_command=None,
+        intents=intents,
+    )
 
     # This leads to calling the setup function defined above, which loads all the cogs.
     qi_bot.load_extension("main")
