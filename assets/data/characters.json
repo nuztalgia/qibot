@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Bouncer",
+    "color": "#141414",
+    "avatar_url": "https://raw.githubusercontent.com/nuztalgia/qi-bot/main/assets/images/bouncer.png",
+    "action_strings": {
+      "member_joined": "$name has entered the building.",
+      "member_left": "$name has left the building."
+    }
+  },
+  {
+    "name": "Sandy",
+    "color": "#FF5565",
+    "avatar_url": "https://raw.githubusercontent.com/nuztalgia/qi-bot/main/assets/images/sandy.png",
+    "action_strings": {
+      "member_joined": [
+        "Welcome! Hey, you look like the new farmer that Emily wrote to me about. $name, right?",
+        "Hello hello! I'm so glad that you made it, $name. I was starting to get bored out here!"
+      ]
+    }
+  }
+]
