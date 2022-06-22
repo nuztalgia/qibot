@@ -10,23 +10,31 @@ from dotenv import dotenv_values, find_dotenv
 _LogMethod: TypeAlias = Callable[[str], None]
 _TemplateMethod: TypeAlias = Callable[..., str]
 
+_ENV_CONFIG: Final[dict[str, bool | int | str]] = dotenv_values(
+    dotenv_path=find_dotenv(), verbose=True
+)
+
 
 class Constants:
-    _env_config: Final[dict[str, str | bool]] = dotenv_values(find_dotenv())
-    BOT_TOKEN: Final[str] = _env_config.get("BOT_TOKEN")  # Must be defined in dotenv.
-    COMMAND_PREFIX: Final[str] = _env_config.get("COMMAND_PREFIX", ".")
-    DEV_MODE_ENABLED: Final[bool] = _env_config.get("DEV_MODE_ENABLED", False)
-    LOG_THRESHOLD: Final[str] = _env_config.get("LOG_THRESHOLD", "info").upper()
-    SALUTATIONS_CHANNEL_ID: Final[int] = _env_config.get("SALUTATIONS_CHANNEL_ID", 0)
+    # Required environment config settings.
+    BOT_TOKEN: Final[str] = _ENV_CONFIG.get("BOT_TOKEN")
+    HOME_SERVER_ID: Final[int] = int(_ENV_CONFIG.get("HOME_SERVER_ID"))
+
+    # Optional environment config settings.
+    COMMAND_PREFIX: Final[str] = _ENV_CONFIG.get("COMMAND_PREFIX", ".")
+    LOG_THRESHOLD: Final[str] = _ENV_CONFIG.get("LOG_THRESHOLD", "info").upper()
+    DEV_MODE_ENABLED: Final[bool] = _ENV_CONFIG.get("DEV_MODE_ENABLED", False)
+    SALUTATIONS_CHANNEL_ID: Final[int] = _ENV_CONFIG.get("SALUTATIONS_CHANNEL_ID", 0)
 
 
 class Log:
-    _root_logger: Final[logging.Logger] = logging.getLogger()
+    _ROOT_LOGGER: Final[logging.Logger] = logging.getLogger()
+    NEWLINE: Final[str] = "\n                          "
 
-    d: Final[_LogMethod] = _root_logger.debug
-    i: Final[_LogMethod] = _root_logger.info
-    w: Final[_LogMethod] = _root_logger.warning
-    e: Final[_LogMethod] = _root_logger.error
+    d: Final[_LogMethod] = _ROOT_LOGGER.debug
+    i: Final[_LogMethod] = _ROOT_LOGGER.info
+    w: Final[_LogMethod] = _ROOT_LOGGER.warning
+    e: Final[_LogMethod] = _ROOT_LOGGER.error
 
     @staticmethod
     def initialize() -> None:
