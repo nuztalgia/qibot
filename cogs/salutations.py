@@ -4,7 +4,8 @@ from typing import Final
 from discord import Bot, Cog, Member
 
 from lib.characters import Action, Character
-from lib.common import Constants, Log
+from lib.common import Constants
+from lib.logger import Log
 
 
 class Salutations(Cog):

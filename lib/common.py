@@ -1,13 +1,10 @@
 import json
-import logging
-import sys
 from string import Template as _Template
 from typing import Any, Callable, Final, TypeAlias
 
 from discord import TextChannel, Webhook
 from dotenv import dotenv_values, find_dotenv
 
-_LogMethod: TypeAlias = Callable[[str], None]
 _TemplateMethod: TypeAlias = Callable[..., str]
 
 _ENV_CONFIG: Final[dict[str, bool | int | str]] = dotenv_values(
@@ -25,28 +22,6 @@ class Constants:
     LOG_THRESHOLD: Final[str] = _ENV_CONFIG.get("LOG_THRESHOLD", "info").upper()
     DEV_MODE_ENABLED: Final[bool] = _ENV_CONFIG.get("DEV_MODE_ENABLED", False)
     SALUTATIONS_CHANNEL_ID: Final[int] = _ENV_CONFIG.get("SALUTATIONS_CHANNEL_ID", 0)
-
-
-class Log:
-    _ROOT_LOGGER: Final[logging.Logger] = logging.getLogger()
-    NEWLINE: Final[str] = "\n                          "
-
-    d: Final[_LogMethod] = _ROOT_LOGGER.debug
-    i: Final[_LogMethod] = _ROOT_LOGGER.info
-    w: Final[_LogMethod] = _ROOT_LOGGER.warning
-    e: Final[_LogMethod] = _ROOT_LOGGER.error
-
-    @staticmethod
-    def initialize() -> None:
-        logging.basicConfig(
-            level=Constants.LOG_THRESHOLD,
-            style="{",
-            format="{asctime} | {levelname[0]} | {message}",
-            datefmt="%Y-%m-%d %H:%M:%S",
-            stream=sys.stdout,
-        )
-        discord_logger = logging.getLogger("discord")
-        discord_logger.setLevel(logging.WARNING)
 
 
 class Template(_Template):

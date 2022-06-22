@@ -7,7 +7,8 @@ from typing import ClassVar, Final
 
 from discord import AllowedMentions, TextChannel
 
-from lib.common import Json, Log, Template, Webhooks
+from lib.common import Json, Template, Webhooks
+from lib.logger import Log
 
 _UNKNOWN_ACTION_TEMPLATE: Final[Template] = Template(
     "Um... I'm not sure how to handle `$action_key`. Sorry!"
