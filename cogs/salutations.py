@@ -23,8 +23,8 @@ class Salutations(Cog):
 
     @Cog.listener()
     async def on_member_join(self, member: Member) -> None:
-        Log.i(f'{member.name}#{member.discriminator} joined "{member.guild.name}".')
-        await self._bouncer_salute(Action.MEMBER_JOINED, member)
+        Log.i(f"{member.name}#{member.discriminator} has joined the server.")
+        await self._bouncer_salute(Action.MEMBER_JOINED, member, emoji="✨")
         await sleep(1)  # Wait until after Discord's default welcome message is sent.
         await Character.SANDY.handle(
             action=Action.MEMBER_JOINED,
@@ -34,12 +34,12 @@ class Salutations(Cog):
 
     @Cog.listener()
     async def on_member_remove(self, member: Member) -> None:
-        Log.i(f'{member.name}#{member.discriminator} left "{member.guild.name}".')
-        await self._bouncer_salute(Action.MEMBER_LEFT, member)
+        Log.i(f"{member.name}#{member.discriminator} has left the server.")
+        await self._bouncer_salute(Action.MEMBER_LEFT, member, emoji="💨")
 
-    async def _bouncer_salute(self, action: Action, member: Member) -> None:
+    async def _bouncer_salute(self, action: Action, member: Member, emoji: str) -> None:
         await Character.BOUNCER.handle(
-            action=action, webhook=self._logging_webhook, name=member.mention
+            action, webhook=self._logging_webhook, name=member.mention, emoji=emoji
         )
 
 
