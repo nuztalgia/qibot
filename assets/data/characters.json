@@ -1,22 +1,26 @@
-[
-  {
-    "name": "Bouncer",
-    "color": "141414",
+{
+  "BOUNCER": {
     "avatar_url": "https://raw.githubusercontent.com/nuztalgia/qi-bot/main/assets/images/bouncer.png",
-    "action_strings": {
+    "color": "141414",
+    "dialogue": {
       "member_joined": "$name has entered the building.",
       "member_left": "$name has left the building."
     }
   },
-  {
-    "name": "Sandy",
-    "color": "FF5565",
+  "SANDY": {
     "avatar_url": "https://raw.githubusercontent.com/nuztalgia/qi-bot/main/assets/images/sandy.png",
-    "action_strings": {
+    "color": "FF5565",
+    "dialogue": {
       "member_joined": [
         "Welcome! Hey, you look like the new farmer that Emily wrote to me about. $name, right?",
-        "Hello hello! I'm so glad that you made it, $name. I was starting to get bored out here!"
+        "Hello hello! I'm so glad that you made it, $name. I was starting to get bored in here!",
+        "Welcome to the Oasis, $name! The air conditioning in here sure feels nice, doesn't it?",
+        "Hi there, $name! I was starting to think you'd never show up. Stay as long as you like!"
+      ],
+      "mention_rules": [
+        "Don't worry about that shady-looking guy in the back. He just makes sure people read the $rules before letting them into some kind of \"club\".",
+        "Yep, it's just me, all alone... well, except for that guy in the back. He guards some sort of \"club\", and only lets people in if they've read the $rules."
       ]
     }
   }
-]
+}

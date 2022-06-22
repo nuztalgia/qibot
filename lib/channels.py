@@ -15,17 +15,18 @@ class Channel(Enum):
         return get_channel_id(name)
 
     LOGGING = auto()
+    RULES = auto()
     WELCOME = auto()
 
     async def get_webhook(self, bot: Bot) -> Webhook:
-        channel = await self._get_channel(bot)
+        channel = await self.get_channel(bot)
         for webhook in await channel.webhooks():
             if webhook.name == _BOT_WEBHOOK_NAME:
                 return webhook
         Log.i(f'Creating bot webhook in "{channel.name}" (Channel ID: {channel.id}).')
         return await channel.create_webhook(name=_BOT_WEBHOOK_NAME)
 
-    async def _get_channel(self, bot: Bot) -> TextChannel:
+    async def get_channel(self, bot: Bot) -> TextChannel:
         channel = bot.get_channel(self.value) or await bot.fetch_channel(self.value)
         if not isinstance(channel, TextChannel):
             raise ValueError(

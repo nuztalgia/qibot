@@ -3,7 +3,6 @@ from typing import Final
 from discord import Activity, ActivityType, AllowedMentions, Cog, Intents, LoginFailure
 from discord.ext.commands import Bot
 
-from lib.characters import Character
 from lib.common import Constants
 from lib.logger import Log
 from lib.registry import CogRegistry
@@ -50,8 +49,6 @@ def setup(bot: Bot) -> None:
 
 
 if __name__ == "__main__":
-    Character.initialize_all()
-
     mode_label = "developer" if Constants.DEV_MODE_ENABLED else "production"
     Log.i(f"Initializing bot in {mode_label} mode.")
 
