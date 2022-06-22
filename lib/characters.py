@@ -5,9 +5,9 @@ from enum import Enum, unique
 from random import choice
 from typing import ClassVar, Final
 
-from discord import AllowedMentions, TextChannel
+from discord import AllowedMentions, Webhook
 
-from lib.common import Json, Template, Webhooks
+from lib.common import Template, load_json_file
 from lib.logger import Log
 
 _UNKNOWN_ACTION_TEMPLATE: Final[Template] = Template(
@@ -45,7 +45,7 @@ class Character:
 
     @classmethod
     def initialize_all(cls) -> None:
-        for character in Json.load_from_file(dir_name="data", file_name="characters"):
+        for character in load_json_file(file_name="characters"):
             character_name = character.get("name", "<No Name>").upper()
             if hasattr(cls, character_name):
                 Log.d(f"  Initializing character: {character_name}")
@@ -60,15 +60,14 @@ class Character:
                 self.action_strings.pop(action_key)
         Log.d(f"    Supported actions: [{', '.join(self.action_strings)}]")
 
-    async def speak(self, channel: TextChannel, message_text: str, **kwargs) -> None:
-        webhook = await Webhooks.get_bot_webhook(channel)
+    async def speak(self, webhook: Webhook, message_text: str, **kwargs) -> None:
         await webhook.send(
             message_text, username=self.name, avatar_url=self.avatar_url, **kwargs
         )
 
-    async def handle(self, action: Action, channel: TextChannel, **kwargs) -> None:
+    async def handle(self, action: Action, webhook: Webhook, **kwargs) -> None:
         await self.speak(
-            channel=channel,
+            webhook=webhook,
             message_text=self._get_message_text_for_action(action.key, **kwargs),
             allowed_mentions=(
                 kwargs.get("allowed_mentions", action.allowed_mentions)
