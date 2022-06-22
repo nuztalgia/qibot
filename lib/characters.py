@@ -90,12 +90,17 @@ class _Bouncer(_Character):
 
 
 class _Sandy(_Character):
+    def __init__(self) -> None:
+        super().__init__()
+        self._rules_link: str = ""
+
     async def greet(self, bot: Bot, member: Member) -> None:
-        rules_channel = await Channel.RULES.get_channel(bot)
-        rules_link = f'[rules]({rules_channel.jump_url} "Go on... click the link!")'
+        if not self._rules_link:
+            channel = await Channel.RULES.get_channel(bot)
+            self._rules_link = f'[rules]({channel.jump_url} "Go on... click the link!")'
         embed = self._create_simple_embed(
             f"{self._get_dialogue(_Action.MEMBER_JOINED, name=member.mention)}\n\n"
-            f"{self._get_dialogue(_Action.MENTION_RULES, rules=rules_link)}"
+            f"{self._get_dialogue(_Action.MENTION_RULES, rules=self._rules_link)}"
         )
         await self._send_message(
             webhook=await Channel.WELCOME.get_webhook(bot),

@@ -19,11 +19,12 @@ class Log:
 
 
 logging.basicConfig(
-    level=Constants.LOG_THRESHOLD,
+    level=logging.DEBUG if Constants.DEV_MODE_ENABLED else logging.INFO,
     style="{",
     format="{asctime} | {levelname[0]} | {message}",
     datefmt="%Y-%m-%d %H:%M:%S",
     stream=sys.stdout,
 )
+
 discord_logger = logging.getLogger("discord")
 discord_logger.setLevel(logging.WARNING)

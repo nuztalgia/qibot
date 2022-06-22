@@ -14,7 +14,7 @@ class ReadyListener(Cog):
 
     @Cog.listener()
     async def on_ready(self) -> None:
-        Log.i(f'Successfully logged in as "{self.bot.user}".')
+        Log.i(f'  Successfully logged in as "{self.bot.user}".')
 
         server_count = len(self.bot.guilds)
         if server_count != 1:
@@ -43,14 +43,14 @@ def setup(bot: Bot) -> None:
     # Load production-ready cogs, or all cogs if the bot is running in dev mode.
     for cog in CogRegistry:
         if cog.is_production_ready or Constants.DEV_MODE_ENABLED:
-            Log.i(f'Loading extension "{cog.cog_class_name}".')
+            Log.d(f'Loading extension "{cog.cog_class_name}"...')
             bot.load_extension(cog.get_module_name())
     bot.add_cog(ReadyListener(bot))  # Prints a message when the bot has logged in.
 
 
 if __name__ == "__main__":
     mode_label = "developer" if Constants.DEV_MODE_ENABLED else "production"
-    Log.i(f"Initializing bot in {mode_label} mode.")
+    Log.i(f"Starting QiBot {Constants.BOT_VERSION} in {mode_label} mode.")
 
     # These intents must be enabled in the Developer Portal on Discord's website.
     intents = Intents.default()

@@ -10,13 +10,10 @@ _ENV_CONFIG: Final[dict[str, Any]] = dotenv_values(
 
 
 class Constants:
-    # Required environment config settings.
-    BOT_TOKEN: Final[str] = _ENV_CONFIG.get("BOT_TOKEN")
-    HOME_SERVER_ID: Final[int] = int(_ENV_CONFIG.get("HOME_SERVER_ID"))
-
-    # Optional environment config settings.
+    BOT_VERSION: Final[str] = "0.1.0"
+    BOT_TOKEN: Final[str] = _ENV_CONFIG["BOT_TOKEN"]
+    HOME_SERVER_ID: Final[int] = int(_ENV_CONFIG["HOME_SERVER_ID"])
     COMMAND_PREFIX: Final[str] = _ENV_CONFIG.get("COMMAND_PREFIX", ".")
-    LOG_THRESHOLD: Final[str] = _ENV_CONFIG.get("LOG_THRESHOLD", "info").upper()
     DEV_MODE_ENABLED: Final[bool] = _ENV_CONFIG.get("DEV_MODE_ENABLED", False)
 
 
