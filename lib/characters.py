@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from enum import Enum, auto, unique
 from random import choice as choose_random
-from typing import Any, Final, Optional
+from typing import Any, Final
 
-from discord import Bot, Embed, File, MISSING, Member, Webhook
+from discord import Bot, File, Member
 
 from lib.channels import Channel
 from lib.common import Template, load_json_file
-from lib.embeds import SimpleEmbed
+from lib.embeds import get_embed_and_files
 from lib.logger import Log
 
 
@@ -31,10 +31,10 @@ class _Character:
     _DATA: Final[dict[str, Any]] = load_json_file(file_name="characters")
 
     def __init__(self) -> None:
-        self._name: Final[str] = self.__class__.__name__.strip("_").upper()
+        self._name: Final[str] = self.__class__.__name__.strip("_").title()
 
-        Log.d(f"  Initializing character: {self._name}")
-        data: dict[str, Any] = _Character._DATA[self._name]
+        Log.d(f"  Initializing character: {self._name.upper()}")
+        data: dict[str, Any] = _Character._DATA[self._name.upper()]
 
         self._avatar_url: Final[str] = data["avatar_url"]
         self._color: Final[int] = int(data["color"], base=16)
@@ -45,19 +45,6 @@ class _Character:
                 Log.w(f'    "{dialogue_key}" is not a recognized action. Ignoring.')
                 self._dialogue.pop(dialogue_key)
         Log.d(f"    Supported actions: [{', '.join(self._dialogue)}]")
-
-    async def _send_message(
-        self, webhook: Webhook, embed: Embed, file: Optional[File] = None
-    ) -> None:
-        await webhook.send(
-            username=self._name.title(),
-            avatar_url=self._avatar_url,
-            embed=embed,
-            file=file if file else MISSING,
-        )
-
-    def _create_simple_embed(self, text: str, emoji: str = "") -> Embed:
-        return SimpleEmbed.create(text=text, emoji=emoji, color=self._color)
 
     def _get_dialogue(self, action: _Action, **kwargs) -> str:
         dialogue_key = action.dialogue_key
@@ -70,6 +57,22 @@ class _Character:
         else:
             Log.e(f'Dialogue for "{dialogue_key}" is not defined for {self._name}.')
 
+    async def _send_message(
+        self,
+        bot: Bot,
+        channel: Channel,
+        text: str,
+        emoji: str = "",
+        thumbnail: str | File = "",
+    ) -> None:
+        webhook = await channel.get_webhook(bot)
+        embed, files = get_embed_and_files(
+            color=self._color, text=text, emoji=emoji, thumbnail=thumbnail
+        )
+        await webhook.send(
+            username=self._name, avatar_url=self._avatar_url, embed=embed, files=files
+        )
+
 
 class _Bouncer(_Character):
     async def announce_member_joined(self, bot: Bot, member: Member) -> None:
@@ -81,12 +84,8 @@ class _Bouncer(_Character):
     async def _announce_member_action(
         self, bot: Bot, member: Member, action: _Action, emoji: str
     ) -> None:
-        await self._send_message(
-            webhook=await Channel.LOGGING.get_webhook(bot),
-            embed=self._create_simple_embed(
-                text=self._get_dialogue(action, name=member.mention), emoji=emoji
-            ),
-        )
+        text = self._get_dialogue(action, name=member.mention)
+        await self._send_message(bot, Channel.LOGGING, text, emoji=emoji)
 
 
 class _Sandy(_Character):
@@ -98,14 +97,12 @@ class _Sandy(_Character):
         if not self._rules_link:
             channel = await Channel.RULES.get_channel(bot)
             self._rules_link = f'[rules]({channel.jump_url} "Go on... click the link!")'
-        embed = self._create_simple_embed(
+        text = (
             f"{self._get_dialogue(_Action.MEMBER_JOINED, name=member.mention)}\n\n"
             f"{self._get_dialogue(_Action.MENTION_RULES, rules=self._rules_link)}"
         )
         await self._send_message(
-            webhook=await Channel.WELCOME.get_webhook(bot),
-            embed=embed.set_thumbnail(url="attachment://sandy_wave.gif"),
-            file=File(fp="assets/images/sandy_wave.gif"),
+            bot, Channel.WELCOME, text, thumbnail="assets/images/sandy_wave.gif"
         )
 
 
