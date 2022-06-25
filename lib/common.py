@@ -2,6 +2,7 @@ from json import load as load_json
 from string import Template as _Template
 from typing import Any, Callable, Final
 
+from discord import Asset, Member
 from dotenv import dotenv_values, find_dotenv
 
 _ENV_CONFIG: Final[dict[str, Any]] = dotenv_values(
@@ -22,10 +23,23 @@ class Template(_Template):
     safe_sub: Final[Callable[..., str]] = _Template.safe_substitute
 
 
-def get_channel_id(channel_name: str) -> int:
-    return _ENV_CONFIG.get(f"{channel_name}_CHANNEL_ID", 0)
+class Utils:
+    _MEMBER_NAMETAG: Final[Template] = Template("${name}#${tag}")
 
+    @staticmethod
+    def get_channel_id(channel_name: str) -> int:
+        return _ENV_CONFIG.get(f"{channel_name}_CHANNEL_ID", 0)
 
-def load_json_file(file_name: str) -> dict[str, Any] | list[Any]:
-    with open(f"assets/data/{file_name}.json", "r") as file:
-        return load_json(file)
+    @staticmethod
+    def get_member_avatar(member: Member, size: int = 64) -> Asset:
+        # Note: Discord will complain if "size" is not a power of 2.
+        return member.display_avatar.with_size(size).with_format("png")
+
+    @staticmethod
+    def get_member_nametag(member: Member) -> str:
+        return Utils._MEMBER_NAMETAG.sub(name=member.name, tag=member.discriminator)
+
+    @staticmethod
+    def load_json_file(file_name: str) -> dict[str, Any] | list[Any]:
+        with open(f"assets/data/{file_name}.json", "r") as file:
+            return load_json(file)

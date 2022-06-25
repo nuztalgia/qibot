@@ -7,7 +7,7 @@ from typing import Any, Final
 from discord import Bot, File, Member
 
 from lib.channels import Channel
-from lib.common import Template, load_json_file
+from lib.common import Template, Utils
 from lib.embeds import get_embed_and_files
 from lib.logger import Log
 
@@ -28,7 +28,7 @@ class _Action(Enum):
 
 
 class _Character:
-    _DATA: Final[dict[str, Any]] = load_json_file(file_name="characters")
+    _DATA: Final[dict[str, Any]] = Utils.load_json_file(file_name="characters")
 
     def __init__(self) -> None:
         self._name: Final[str] = self.__class__.__name__.strip("_").title()
