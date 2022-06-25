@@ -1,43 +1,39 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Final
+from typing import Final, Iterable, Optional
 
 from discord import Embed, File
 
 from lib.common import Template
 
 _DEFAULT_COLOR: Final[int] = 0x6C79FF
+_SPACING: Final[str] = " \u200B "
 
 _ATTACHMENT_URL: Final[Template] = Template("attachment://$filename")
-_TEXT_WITH_EMOJI: Final[Template] = Template("$emoji \u200B \u200B $text")
+_TEXT_WITH_EMOJI: Final[Template] = Template(f"$emoji{_SPACING}$text")
 
-
-def get_embed(color: int = 0, text: str = "", emoji: str = "") -> Embed:
-    return _create_embed_data(params=locals()).build_embed()
-
-
-def get_embed_and_files(
-    color: int = 0,
-    text: str = "",
-    emoji: str = "",
-    thumbnail: str | File = "",
-) -> (Embed, list[File]):
-    embed_data = _create_embed_data(params=locals())
-    return embed_data.build_embed(), embed_data.get_files()
-
-
-def _create_embed_data(params: dict[str, Any]) -> _BaseEmbedData:
-    constructor = _ThumbnailEmbedData if params.get("thumbnail") else _SimpleEmbedData
-    return constructor(**params)
+_FIELD_CONTENT: Final[Template] = Template(
+    f"{_TEXT_WITH_EMOJI.safe_sub(emoji='▪')}{_SPACING * 4}"  # Extra horizontal padding.
+)
+_EMPTY_FIELD_CONTENT: Final[str] = _TEXT_WITH_EMOJI.sub(emoji="✖", text="*None!*")
 
 
 def _assert_valid_emoji(emoji: str) -> None:
-    if (not emoji) or (len(emoji) != 1) or emoji.isascii():
-        raise ValueError(f'Invalid emoji: "{emoji}" (Must be non-ascii & single-char.)')
+    if (not emoji) or (len(emoji) > 2) or emoji.isascii():
+        raise ValueError(f'Invalid emoji: "{emoji}" (Must be non-ascii and <=2 chars.)')
 
 
-class _BaseEmbedData:
+@dataclass(frozen=True)
+class FieldData:
+    emoji: str  # Required.
+    title: str  # Required.
+    content: Optional[str | Iterable[str]] = None
+    inline: bool = True
+
+
+class EmbedData:
     def __init__(self, color: int, **_) -> None:
         self._required_attr_names: Final[list[str]] = []
         self._files: Final[list[File]] = []
@@ -58,8 +54,49 @@ class _BaseEmbedData:
     def get_files(self) -> list[File]:
         return self._files if self._files else Embed.Empty
 
+    @staticmethod
+    def create(
+        color: int = 0,
+        text: str = "",
+        emoji: str = "",
+        thumbnail: Optional[str | File] = None,
+        fields: Optional[Iterable[FieldData]] = None,
+    ) -> EmbedData:
+        params = locals()
+        cls = _ThumbnailEmbedData if params.get("thumbnail") else _SimpleEmbedData
+        if params.get("fields"):
+            cls = type(f"{cls.__name__}WithFields", (_FieldsMixin, cls), {})
+        return cls(**params)
 
-class _SimpleEmbedData(_BaseEmbedData):
+
+class _FieldsMixin(EmbedData):
+    def __init__(self, fields: Iterable[FieldData], **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._required_attr_names.append("fields")
+        self._fields: Final[Iterable[FieldData]] = tuple(fields)  # Make it immutable.
+
+    def _validate(self) -> None:
+        super()._validate()
+        for field in self._fields:
+            _assert_valid_emoji(field.emoji)
+            if not field.title:
+                raise ValueError("A title is required for all fields.")
+
+    def build_embed(self) -> Embed:
+        embed = super().build_embed()
+        for field in self._fields:
+            name = _TEXT_WITH_EMOJI.sub(emoji=field.emoji, text=field.title)
+            if not field.content:
+                val = _EMPTY_FIELD_CONTENT
+            elif isinstance(field.content, str):
+                val = _FIELD_CONTENT.sub(text=field.content)
+            else:
+                val = "\n".join(_FIELD_CONTENT.sub(text=text) for text in field.content)
+            embed.add_field(name=name, value=val, inline=field.inline)
+        return embed
+
+
+class _SimpleEmbedData(EmbedData):
     def __init__(self, text: str, emoji: str, **kwargs) -> None:
         super().__init__(**kwargs)
         self._required_attr_names.append("text")

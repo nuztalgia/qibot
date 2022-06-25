@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from enum import Enum, auto, unique
 from random import choice as choose_random
-from typing import Any, Final
+from typing import Any, Final, Iterable, Optional
 
 from discord import Bot, File, Member
 
 from lib.channels import Channel
 from lib.common import Template, Utils
-from lib.embeds import get_embed_and_files
+from lib.embeds import EmbedData, FieldData
 from lib.logger import Log
 
 
@@ -63,14 +63,15 @@ class _Character:
         channel: Channel,
         text: str,
         emoji: str = "",
-        thumbnail: str | File = "",
+        thumbnail: Optional[str | File] = None,
+        fields: Optional[Iterable[FieldData]] = None,
     ) -> None:
-        webhook = await channel.get_webhook(bot)
-        embed, files = get_embed_and_files(
-            color=self._color, text=text, emoji=emoji, thumbnail=thumbnail
-        )
-        await webhook.send(
-            username=self._name, avatar_url=self._avatar_url, embed=embed, files=files
+        embed_data = EmbedData.create(self._color, text, emoji, thumbnail, fields)
+        await (await channel.get_webhook(bot)).send(
+            username=self._name,
+            avatar_url=self._avatar_url,
+            embed=embed_data.build_embed(),
+            files=embed_data.get_files(),
         )
 
 
