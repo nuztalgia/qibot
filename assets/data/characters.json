@@ -5,6 +5,10 @@
     "dialogue": {
       "member_joined": "$name has entered the building.",
       "member_left": "$name has left the building."
+    },
+    "emoji": {
+      "member_joined": "🌈",
+      "member_left": "💨"
     }
   },
   "SANDY": {
@@ -21,6 +25,9 @@
         "Don't worry about that shady-looking guy in the back. He just makes sure people read the $rules before letting them into some kind of \"club\".",
         "Yep, it's just me, all alone... well, except for that guy in the back. He guards some sort of \"club\", and only lets people in if they've read the $rules."
       ]
+    },
+    "emoji": {
+      "member_joined": ["😊", "🥰", "😜", "🤩"]
     }
   }
 }

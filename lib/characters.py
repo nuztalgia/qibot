@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum, auto, unique
 from random import choice as choose_random
-from typing import Any, Final, Iterable, Optional
+from typing import Any, Final, Iterable, Optional, TypeAlias
 
 from discord import Bot, File, Member
 
@@ -11,6 +11,8 @@ from lib.common import Template, Utils
 from lib.embeds import EmbedData, FieldData
 from lib.logger import Log
 
+_ActionDict: TypeAlias = dict[str, str | list[str]]
+
 
 @unique
 class _Action(Enum):
@@ -18,17 +20,36 @@ class _Action(Enum):
     MEMBER_LEFT = auto()
     MENTION_RULES = auto()
 
-    @classmethod
-    def is_defined(cls, dialogue_key: str) -> bool:
-        return any(member for member in cls if dialogue_key == member.dialogue_key)
-
     @property
-    def dialogue_key(self) -> str:
+    def key(self) -> str:
         return self.name.lower()
+
+    @classmethod
+    def _is_defined(cls, key: str) -> bool:
+        return any(member for member in cls if key.lower() == member.key)
+
+    @classmethod
+    def sanitize(cls, action_dict: _ActionDict) -> _ActionDict:
+        sanitized_dict = {}
+        for key in list(action_dict):
+            if cls._is_defined(key):
+                sanitized_dict[key] = action_dict[key]
+            else:
+                Log.w(f'    "{key}" is not a recognized action. Ignoring.')
+        return sanitized_dict
+
+    def get_response(self, action_dict: _ActionDict) -> str:
+        response = ""
+        if self.key in action_dict:
+            # Use the single defined string, or a random choice from the defined list.
+            response = action_dict[self.key]
+            if isinstance(response, list):
+                response = choose_random(response)
+        return response
 
 
 class _Character:
-    _DATA: Final[dict[str, Any]] = Utils.load_json_file(file_name="characters")
+    _DATA: Final[dict[str, Any]] = Utils.load_json_file(name="characters")
 
     def __init__(self) -> None:
         self._name: Final[str] = self.__class__.__name__.strip("_").title()
@@ -38,24 +59,17 @@ class _Character:
 
         self._avatar_url: Final[str] = data["avatar_url"]
         self._color: Final[int] = int(data["color"], base=16)
-        self._dialogue: Final[dict[str, str | list[str]]] = data["dialogue"]
-
-        for dialogue_key in list(self._dialogue):
-            if not _Action.is_defined(dialogue_key):
-                Log.w(f'    "{dialogue_key}" is not a recognized action. Ignoring.')
-                self._dialogue.pop(dialogue_key)
-        Log.d(f"    Supported actions: [{', '.join(self._dialogue)}]")
+        self._dialogue: Final[_ActionDict] = _Action.sanitize(data["dialogue"])
+        self._emoji: Final[_ActionDict] = _Action.sanitize(data["emoji"])
 
     def _get_dialogue(self, action: _Action, **kwargs) -> str:
-        dialogue_key = action.dialogue_key
-        if dialogue_key in self._dialogue:
-            # Use the single defined string, or a random choice from the defined list.
-            dialogue_value = self._dialogue[dialogue_key]
-            if isinstance(dialogue_value, list):
-                dialogue_value = choose_random(dialogue_value)
-            return Template(dialogue_value).safe_sub(kwargs)
-        else:
-            Log.e(f'Dialogue for "{dialogue_key}" is not defined for {self._name}.')
+        dialogue = action.get_response(self._dialogue)
+        if not dialogue:
+            Log.e(f'Dialogue for "{action.key}" is not defined for {self._name}.')
+        return Template(dialogue).safe_sub(kwargs)
+
+    def _get_emoji(self, action: _Action) -> str:
+        return action.get_response(self._emoji)
 
     async def _send_message(
         self,
@@ -77,16 +91,33 @@ class _Character:
 
 class _Bouncer(_Character):
     async def announce_member_joined(self, bot: Bot, member: Member) -> None:
-        await self._announce_member_action(bot, member, _Action.MEMBER_JOINED, "✨")
+        extras = [
+            FieldData("🐣", "Account Created", Utils.format_time(member.created_at)),
+        ]
+        await self._announce_member_action(bot, member, _Action.MEMBER_JOINED, extras)
 
     async def announce_member_left(self, bot: Bot, member: Member) -> None:
-        await self._announce_member_action(bot, member, _Action.MEMBER_LEFT, "💨")
+        extras = [
+            FieldData("🌱", "Joined Server", Utils.format_time(member.joined_at)),
+            FieldData("🍂", "Server Roles", [role.mention for role in member.roles[1:]]),
+        ]
+        await self._announce_member_action(bot, member, _Action.MEMBER_LEFT, extras)
 
     async def _announce_member_action(
-        self, bot: Bot, member: Member, action: _Action, emoji: str
+        self, bot: Bot, member: Member, action: _Action, extras: Iterable[FieldData]
     ) -> None:
-        text = self._get_dialogue(action, name=member.mention)
-        await self._send_message(bot, Channel.LOGGING, text, emoji=emoji)
+        await self._send_message(
+            bot=bot,
+            channel=Channel.LOGGING,
+            text=f"**{self._get_dialogue(action, name=member.mention)}**",
+            emoji=self._get_emoji(action),
+            thumbnail=Utils.get_member_avatar(member).url,
+            fields=[
+                FieldData("❄", "Unique ID", str(member.id), True),
+                FieldData("🏷️", "Current Tag", Utils.get_member_nametag(member), True),
+                *extras,
+            ],
+        )
 
 
 class _Sandy(_Character):
@@ -98,12 +129,14 @@ class _Sandy(_Character):
         if not self._rules_link:
             channel = await Channel.RULES.get_channel(bot)
             self._rules_link = f'[rules]({channel.jump_url} "Go on... click the link!")'
-        text = (
-            f"{self._get_dialogue(_Action.MEMBER_JOINED, name=member.mention)}\n\n"
-            f"{self._get_dialogue(_Action.MENTION_RULES, rules=self._rules_link)}"
-        )
+        welcome_text = self._get_dialogue(_Action.MEMBER_JOINED, name=member.mention)
+        rules_text = self._get_dialogue(_Action.MENTION_RULES, rules=self._rules_link)
         await self._send_message(
-            bot, Channel.WELCOME, text, thumbnail="assets/images/sandy_wave.gif"
+            bot=bot,
+            channel=Channel.WELCOME,
+            text=f"{welcome_text}\n\n{rules_text}",
+            emoji=self._get_emoji(_Action.MEMBER_JOINED),
+            thumbnail="assets/images/sandy_wave.gif",  # TODO: Personalize this image.
         )
 
 

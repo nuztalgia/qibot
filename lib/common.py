@@ -1,9 +1,11 @@
+from datetime import datetime, timezone
 from json import load as load_json
 from string import Template as _Template
 from typing import Any, Callable, Final
 
 from discord import Asset, Member
 from dotenv import dotenv_values, find_dotenv
+from humanize import naturaltime
 
 _ENV_CONFIG: Final[dict[str, Any]] = dotenv_values(
     dotenv_path=find_dotenv(), verbose=True
@@ -25,6 +27,7 @@ class Template(_Template):
 
 class Utils:
     _MEMBER_NAMETAG: Final[Template] = Template("${name}#${tag}")
+    _JSON_FILE_PATH: Final[Template] = Template("assets/data/${name}.json")
 
     @staticmethod
     def get_channel_id(channel_name: str) -> int:
@@ -40,6 +43,14 @@ class Utils:
         return Utils._MEMBER_NAMETAG.sub(name=member.name, tag=member.discriminator)
 
     @staticmethod
-    def load_json_file(file_name: str) -> dict[str, Any] | list[Any]:
-        with open(f"assets/data/{file_name}.json", "r") as file:
+    def load_json_file(name: str) -> dict[str, Any] | list[Any]:
+        with open(Utils._JSON_FILE_PATH.sub(name=name), "r", encoding="utf-8") as file:
             return load_json(file)
+
+    @staticmethod
+    def format_time(time: datetime, include_elapsed: bool = True) -> str:
+        result = f"<t:{int(time.timestamp())}>"
+        if include_elapsed:
+            # noinspection PyTypeChecker
+            result += f" ({naturaltime(datetime.now(timezone.utc) - time)})"
+        return result

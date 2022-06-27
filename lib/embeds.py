@@ -30,7 +30,7 @@ class FieldData:
     emoji: str  # Required.
     title: str  # Required.
     content: Optional[str | Iterable[str]] = None
-    inline: bool = True
+    inline: bool = False
 
 
 class EmbedData:
