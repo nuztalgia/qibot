@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
-from json import load as load_json
+from json import loads as parse_json
 from string import Template as StandardTemplate
 from typing import Any, Callable, Final, Optional
 
+from aiofiles import open as open_file
+from aiohttp import ClientSession
 from discord import Member
 from dotenv import dotenv_values, find_dotenv
 from humanize import naturaltime
@@ -33,22 +35,29 @@ class Template(StandardTemplate):
 
 
 class Utils:
-    _MEMBER_NAMETAG: Final[Template] = Template("${name}#${tag}")
+    _HTTP_SESSION: Final[ClientSession] = ClientSession()
+
     _JSON_FILE_PATH: Final[Template] = Template("assets/data/${name}.json")
+    _MEMBER_NAMETAG: Final[Template] = Template("${name}#${tag}")
+    _TIME_FORMAT: Final[Template] = Template("<t:${timestamp}> (${elapsed})")
 
-    @staticmethod
-    def get_member_nametag(member: Member) -> str:
-        return Utils._MEMBER_NAMETAG.sub(name=member.name, tag=member.discriminator)
+    @classmethod
+    def format_time(cls, time: datetime) -> str:
+        # noinspection PyTypeChecker
+        elapsed = naturaltime(datetime.now(timezone.utc) - time)
+        return cls._TIME_FORMAT.sub(timestamp=int(time.timestamp()), elapsed=elapsed)
 
-    @staticmethod
-    def load_json_file(name: str) -> dict[str, Any] | list[Any]:
-        with open(Utils._JSON_FILE_PATH.sub(name=name), "r", encoding="utf-8") as file:
-            return load_json(file)
+    @classmethod
+    def get_member_nametag(cls, member: Member) -> str:
+        return cls._MEMBER_NAMETAG.sub(name=member.name, tag=member.discriminator)
 
-    @staticmethod
-    def format_time(time: datetime, include_elapsed: bool = True) -> str:
-        result = f"<t:{int(time.timestamp())}>"
-        if include_elapsed:
-            # noinspection PyTypeChecker
-            result += f" ({naturaltime(datetime.now(timezone.utc) - time)})"
-        return result
+    @classmethod
+    async def load_content_from_url(cls, url: str) -> bytes:
+        async with cls._HTTP_SESSION.get(url) as response:
+            return await response.read()
+
+    @classmethod
+    async def load_json_from_file(cls, name: str) -> dict[str, Any] | list[Any]:
+        filename = cls._JSON_FILE_PATH.sub(name=name)
+        async with open_file(filename, mode="r", encoding="utf-8") as file:
+            return parse_json(await file.read())

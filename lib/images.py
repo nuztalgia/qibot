@@ -8,7 +8,7 @@ from PIL.Image import Image, new as new_image, open as open_image
 from PIL.ImageDraw import Draw
 from discord import Asset, File, Member
 
-from lib.common import Template
+from lib.common import Template, Utils
 
 _ImageSource: TypeAlias = str | Asset
 
@@ -40,8 +40,10 @@ class _ImageWrapper:
 
     @staticmethod
     async def _get_image_data(source: _ImageSource) -> str | bytes:
-        if isinstance(source, str) and Path(source).is_file():
-            return source
+        if isinstance(source, str):
+            if Path(source).is_file():
+                return source
+            return await Utils.load_content_from_url(source)
         elif isinstance(source, Asset):
             return await source.read()
         else:

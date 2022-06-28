@@ -22,7 +22,7 @@ class Characters:
     @classmethod
     async def initialize(cls):
         Log.d("Loading character data...")
-        _Character.DATA = Utils.load_json_file(name="characters")
+        _Character.DATA = await Utils.load_json_from_file(name="characters")
         cls.BOUNCER = _Bouncer()
         cls.SANDY = _Sandy()
 
