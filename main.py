@@ -1,76 +1,93 @@
-from typing import Final
+from typing import Final, Optional
 
 from discord import Activity, ActivityType, AllowedMentions, Cog, Intents, LoginFailure
 from discord.ext.commands import Bot
 
-from lib.common import Constants
+from lib.common import Config, Constants
 from lib.logger import Log
 from lib.registry import CogRegistry
 
 
-class ReadyListener(Cog):
-    def __init__(self, bot: Bot) -> None:
+def run_bot() -> None:
+    custom_prefix = Config.CUSTOM_COMMAND_PREFIX
+    prefix = custom_prefix or Constants.DEFAULT_COMMAND_PREFIX
+
+    prefix_label = f' with custom prefix "{custom_prefix}"' if custom_prefix else ""
+    mode_label = "developer mode" if Config.DEV_MODE_ENABLED else "production mode"
+    Log.i(f"Starting QiBot {Constants.QI_BOT_VERSION} in {mode_label}{prefix_label}.")
+
+    bot = Bot(
+        allowed_mentions=AllowedMentions.none(),
+        case_insensitive=True,
+        command_prefix=prefix,
+        debug_guilds=[Config.SERVER_ID],
+        help_command=None,
+        intents=_get_required_intents(),
+    )
+
+    # Load production-ready cogs, or all cogs if the bot is running in dev mode.
+    for cog in CogRegistry:
+        if cog.is_production_ready or Config.DEV_MODE_ENABLED:
+            Log.d(f'Loading extension "{cog.cog_class_name}"...')
+            bot.load_extension(cog.get_module_name())
+
+    # This cog is defined below. It finishes the setup process after the bot logs in.
+    bot.add_cog(_ReadyListener(bot, Config.SERVER_ID))
+
+    try:
+        Log.i("Attempting to log in to Discord...")
+        bot.run(Config.BOT_TOKEN)
+    except LoginFailure:
+        Log.e("Failed to log in. Make sure the BOT_TOKEN is configured properly.")
+
+
+# noinspection PyDunderSlots, PyUnresolvedReferences
+def _get_required_intents() -> Intents:
+    intents = Intents.default()
+    # These intents must be enabled in the Developer Portal on Discord's website.
+    intents.members = True
+    intents.message_content = True
+    return intents
+
+
+class _ReadyListener(Cog):
+    def __init__(self, bot: Bot, server_id: int) -> None:
         self.bot: Final[Bot] = bot
+        self._server_id: Final[int] = server_id
 
     @Cog.listener()
     async def on_ready(self) -> None:
         Log.i(f'  Successfully logged in as "{self.bot.user}".')
 
-        server_count = len(self.bot.guilds)
-        if server_count != 1:
-            Log.e(
-                f"This bot account is in {server_count} servers (expected: 1). Exiting."
-            )
+        server_name = self._get_server_name()
+        if not server_name:
             return await self.bot.close()
 
-        home_server = self.bot.guilds[0]
-        if home_server.id != Constants.HOME_SERVER_ID:
-            Log.e(
-                f'This bot is running in an unexpected server: "{home_server.name}"'
-                f"{Log.NEWLINE}Make sure the HOME_SERVER_ID is configured properly."
-            )
-            return await self.bot.close()
+        Log.i(f'Monitoring server: "{server_name}"')
 
-        # Bot token and server are correctly configured. Finish the setup process.
-        Log.i(f'Monitoring server: "{home_server.name}"')
         await self.bot.change_presence(
             activity=Activity(type=ActivityType.watching, name="everything.")
         )
         self.bot.remove_cog(self.__class__.__name__)
 
+    def _get_server_name(self) -> Optional[str]:
+        server_count = len(self.bot.guilds)
+        if server_count != 1:
+            Log.e(
+                f"This bot account is in {server_count} servers (expected: 1). Exiting."
+            )
+            return
 
-def setup(bot: Bot) -> None:
-    # Load production-ready cogs, or all cogs if the bot is running in dev mode.
-    for cog in CogRegistry:
-        if cog.is_production_ready or Constants.DEV_MODE_ENABLED:
-            Log.d(f'Loading extension "{cog.cog_class_name}"...')
-            bot.load_extension(cog.get_module_name())
-    bot.add_cog(ReadyListener(bot))  # Prints a message when the bot has logged in.
+        server = self.bot.guilds[0]
+        if server.id != self._server_id:
+            Log.e(
+                f'This bot is running in an unexpected server: "{server.name}"'
+                f"{Log.NEWLINE}Make sure the SERVER_ID is configured properly. Exiting."
+            )
+            return
+
+        return server.name
 
 
 if __name__ == "__main__":
-    mode_label = "developer" if Constants.DEV_MODE_ENABLED else "production"
-    Log.i(f"Starting QiBot {Constants.BOT_VERSION} in {mode_label} mode.")
-
-    # These intents must be enabled in the Developer Portal on Discord's website.
-    intents = Intents.default()
-    intents.members = True
-    intents.message_content = True
-
-    qi_bot = Bot(
-        allowed_mentions=AllowedMentions.none(),
-        case_insensitive=True,
-        command_prefix=Constants.COMMAND_PREFIX,
-        debug_guilds=[Constants.HOME_SERVER_ID],
-        help_command=None,
-        intents=intents,
-    )
-
-    # This leads to calling the setup function defined above, which loads all the cogs.
-    qi_bot.load_extension("main")
-
-    try:
-        Log.i("Attempting to log in to Discord...")
-        qi_bot.run(Constants.BOT_TOKEN)
-    except LoginFailure:
-        Log.e("Failed to log in. Make sure the BOT_TOKEN is configured properly.")
+    run_bot()

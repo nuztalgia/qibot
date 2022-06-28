@@ -1,37 +1,40 @@
 from datetime import datetime, timezone
 from json import load as load_json
-from string import Template as _Template
-from typing import Any, Callable, Final
+from string import Template as StandardTemplate
+from typing import Any, Callable, Final, Optional
 
 from discord import Asset, Member
 from dotenv import dotenv_values, find_dotenv
 from humanize import naturaltime
 
-_ENV_CONFIG: Final[dict[str, Any]] = dotenv_values(
-    dotenv_path=find_dotenv(), verbose=True
-)
-
 
 class Constants:
-    BOT_VERSION: Final[str] = "0.1.0"
-    BOT_TOKEN: Final[str] = _ENV_CONFIG["BOT_TOKEN"]
-    HOME_SERVER_ID: Final[int] = int(_ENV_CONFIG["HOME_SERVER_ID"])
-    COMMAND_PREFIX: Final[str] = _ENV_CONFIG.get("COMMAND_PREFIX", ".")
-    DEV_MODE_ENABLED: Final[bool] = _ENV_CONFIG.get("DEV_MODE_ENABLED", False)
+    QI_BOT_VERSION: Final[str] = "0.1.0"
+    DEFAULT_COMMAND_PREFIX: Final[str] = "."
 
 
-class Template(_Template):
-    sub: Final[Callable[..., str]] = _Template.substitute
-    safe_sub: Final[Callable[..., str]] = _Template.safe_substitute
+class Config:
+    _ENV: Final[dict[str, Any]] = dotenv_values(dotenv_path=find_dotenv(), verbose=True)
+
+    BOT_TOKEN: Final[str] = _ENV["BOT_TOKEN"]
+    SERVER_ID: Final[int] = int(_ENV["SERVER_ID"])
+    DEV_MODE_ENABLED: Final[bool] = _ENV.get("DEV_MODE_ENABLED", False)
+    CUSTOM_COMMAND_PREFIX: Final[Optional[str]] = _ENV.get("CUSTOM_COMMAND_PREFIX")
+    CUSTOM_LOG_THRESHOLD: Final[Optional[str]] = _ENV.get("CUSTOM_LOG_THRESHOLD")
+
+    @classmethod
+    def get_channel_id(cls, channel_name: str) -> int:
+        return cls._ENV.get(f"{channel_name.upper()}_CHANNEL_ID", 0)
+
+
+class Template(StandardTemplate):
+    sub: Final[Callable[..., str]] = StandardTemplate.substitute
+    safe_sub: Final[Callable[..., str]] = StandardTemplate.safe_substitute
 
 
 class Utils:
     _MEMBER_NAMETAG: Final[Template] = Template("${name}#${tag}")
     _JSON_FILE_PATH: Final[Template] = Template("assets/data/${name}.json")
-
-    @staticmethod
-    def get_channel_id(channel_name: str) -> int:
-        return _ENV_CONFIG.get(f"{channel_name}_CHANNEL_ID", 0)
 
     @staticmethod
     def get_member_avatar(member: Member, size: int = 64) -> Asset:
