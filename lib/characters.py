@@ -9,6 +9,7 @@ from discord import Bot, File, Member
 from lib.channels import Channel
 from lib.common import Template, Utils
 from lib.embeds import EmbedData, FieldData
+from lib.images import ImageUtils
 from lib.logger import Log
 
 _ActionDict: TypeAlias = dict[str, str | list[str]]
@@ -111,7 +112,7 @@ class _Bouncer(_Character):
             channel=Channel.LOGGING,
             text=f"**{self._get_dialogue(action, name=member.mention)}**",
             emoji=self._get_emoji(action),
-            thumbnail=Utils.get_member_avatar(member).url,
+            thumbnail=await ImageUtils.get_member_avatar(member),
             fields=[
                 FieldData("❄", "Unique ID", str(member.id), True),
                 FieldData("🏷️", "Current Tag", Utils.get_member_nametag(member), True),

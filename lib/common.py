@@ -3,7 +3,7 @@ from json import load as load_json
 from string import Template as StandardTemplate
 from typing import Any, Callable, Final, Optional
 
-from discord import Asset, Member
+from discord import Member
 from dotenv import dotenv_values, find_dotenv
 from humanize import naturaltime
 
@@ -35,11 +35,6 @@ class Template(StandardTemplate):
 class Utils:
     _MEMBER_NAMETAG: Final[Template] = Template("${name}#${tag}")
     _JSON_FILE_PATH: Final[Template] = Template("assets/data/${name}.json")
-
-    @staticmethod
-    def get_member_avatar(member: Member, size: int = 64) -> Asset:
-        # Note: Discord will complain if "size" is not a power of 2.
-        return member.display_avatar.with_size(size).with_format("png")
 
     @staticmethod
     def get_member_nametag(member: Member) -> str:
