@@ -3,6 +3,8 @@ from typing import Final, Optional
 from discord import Activity, ActivityType, AllowedMentions, Cog, Intents, LoginFailure
 from discord.ext.commands import Bot
 
+from lib.channels import Channel
+from lib.characters import Characters
 from lib.common import Config, Constants
 from lib.logger import Log
 from lib.registry import CogRegistry
@@ -64,6 +66,9 @@ class _ReadyListener(Cog):
             return await self.bot.close()
 
         Log.i(f'Monitoring server: "{server_name}"')
+
+        await Channel.initialize_all(self.bot)
+        await Characters.initialize()  # Must be called after channels are initialized.
 
         await self.bot.change_presence(
             activity=Activity(type=ActivityType.watching, name="everything.")
