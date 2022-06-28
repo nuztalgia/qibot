@@ -18,7 +18,7 @@ class Channel(Enum):
         return Config.get_channel_id(name)
 
     @classmethod
-    async def initialize_all(cls, bot: Bot):
+    async def initialize_all(cls, bot: Bot) -> None:
         for enum_member in cls:
             name, uid = enum_member.name, enum_member.value
             channel = bot.get_channel(uid) or await bot.fetch_channel(uid)

@@ -1,8 +1,6 @@
 from enum import Enum, auto, unique
 from typing import Final
 
-from discord import Bot, Cog
-
 from lib.common import Template
 
 _COG_MODULE_TEMPLATE: Final[Template] = Template("cogs.$name")
@@ -20,9 +18,6 @@ class CogRegistry(Enum):
     def _generate_next_value_(name: str, start: int, count: int, values: list) -> str:
         # Convert CONSTANT_CASE to PascalCase to get the name of the cog's class.
         return "".join(word.title() for word in name.split("_"))
-
-    def get_cog(self, bot: Bot) -> Cog:
-        return bot.get_cog(self.cog_class_name)
 
     def get_module_name(self) -> str:
         return _COG_MODULE_TEMPLATE.substitute(name=self.name.lower())

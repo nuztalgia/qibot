@@ -54,36 +54,36 @@ def _get_required_intents() -> Intents:
 
 class _ReadyListener(Cog):
     def __init__(self, bot: Bot, server_id: int) -> None:
-        self.bot: Final[Bot] = bot
+        self._bot: Final[Bot] = bot
         self._server_id: Final[int] = server_id
 
     @Cog.listener()
     async def on_ready(self) -> None:
-        Log.i(f'  Successfully logged in as "{self.bot.user}".')
+        Log.i(f'  Successfully logged in as "{self._bot.user}".')
 
         server_name = self._get_server_name()
         if not server_name:
-            return await self.bot.close()
+            return await self._bot.close()
 
         Log.i(f'Monitoring server: "{server_name}"')
 
-        await Channel.initialize_all(self.bot)
+        await Channel.initialize_all(self._bot)
         await Characters.initialize()  # Must be called after channels are initialized.
 
-        await self.bot.change_presence(
+        await self._bot.change_presence(
             activity=Activity(type=ActivityType.watching, name="everything.")
         )
-        self.bot.remove_cog(self.__class__.__name__)
+        self._bot.remove_cog(self.__class__.__name__)
 
     def _get_server_name(self) -> Optional[str]:
-        server_count = len(self.bot.guilds)
+        server_count = len(self._bot.guilds)
         if server_count != 1:
             Log.e(
                 f"This bot account is in {server_count} servers (expected: 1). Exiting."
             )
             return
 
-        server = self.bot.guilds[0]
+        server = self._bot.guilds[0]
         if server.id != self._server_id:
             Log.e(
                 f'This bot is running in an unexpected server: "{server.name}"'

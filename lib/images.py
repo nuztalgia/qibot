@@ -35,7 +35,7 @@ class ImageUtils:
 
 
 class _ImageWrapper:
-    def __init__(self, image: Image):
+    def __init__(self, image: Image) -> None:
         self._image = image
 
     @staticmethod
