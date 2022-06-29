@@ -8,6 +8,9 @@ _LogMethod: TypeAlias = Callable[[str], None]
 
 _ROOT_LOGGER: Final[logging.Logger] = logging.getLogger()
 
+_EXTERNAL_LOGGER_NAMES: Final[list[str]] = ["discord", "PIL"]
+_EXTERNAL_LOGGER_LEVEL: Final[int] = logging.WARNING
+
 
 class Log:
     NEWLINE: Final[str] = "\n                          "
@@ -35,8 +38,8 @@ def _initialize() -> None:
         datefmt="%Y-%m-%d %H:%M:%S",
         stream=sys.stdout,
     )
-    discord_logger = logging.getLogger("discord")
-    discord_logger.setLevel(logging.WARNING)
+    for logger_name in _EXTERNAL_LOGGER_NAMES:
+        logging.getLogger(logger_name).setLevel(_EXTERNAL_LOGGER_LEVEL)
 
 
 # This will be executed only once (the first time this module is imported anywhere).
