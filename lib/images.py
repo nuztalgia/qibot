@@ -15,6 +15,9 @@ _ImageSource: TypeAlias = str | Asset
 _COLOR_BLACK: Final[int] = 0
 _COLOR_WHITE: Final[int] = 1
 
+_AVATAR_SIZE_MAX: Final[int] = 512
+_AVATAR_SIZE_DEFAULT: Final[int] = 64
+
 _IMAGE_FORMAT: Final[Literal["png"]] = "png"
 
 _FILENAME_TEMPLATE: Final[Template] = Template(f"$name.{_IMAGE_FORMAT}")
@@ -24,14 +27,15 @@ _FILENAME_DEFAULT: Final[str] = _FILENAME_TEMPLATE.sub(name="image")
 class ImageUtils:
     @staticmethod
     async def get_member_avatar(
-        member: Member, size: int = 64, circle_crop: bool = True
+        member: Member, size: int = _AVATAR_SIZE_DEFAULT, circle_crop: bool = True
     ) -> File:
-        # The following line will fail loudly if "size" is not a power of 2.
-        asset = member.display_avatar.with_size(size).with_format(_IMAGE_FORMAT)
-        image_wrapper = await _ImageWrapper.create_from(asset)
+        image_wrapper = await _ImageWrapper.create_from(
+            # Note: "with_size" must be called with an integer that is a power of 2.
+            member.display_avatar.with_size(_AVATAR_SIZE_MAX).with_format(_IMAGE_FORMAT)
+        )
         if circle_crop:
             image_wrapper.circle_crop()
-        return image_wrapper.write_to_file(name="avatar")
+        return image_wrapper.resize(size).write_to_file(name="avatar")
 
 
 class _ImageWrapper:
@@ -68,7 +72,15 @@ class _ImageWrapper:
             image_bytes.seek(0)
             return File(fp=image_bytes, filename=filename)
 
-    def circle_crop(self) -> None:
+    def circle_crop(self) -> _ImageWrapper:
         mask = new_image(mode="1", size=self._image.size, color=_COLOR_BLACK)
-        Draw(mask).ellipse(xy=(0, 0, *self._image.size), fill=_COLOR_WHITE)
+        circle_size = (self._image.width - 2, self._image.height - 2)
+        Draw(mask).ellipse(xy=(0, 0, *circle_size), fill=_COLOR_WHITE)
         self._image.putalpha(mask)
+        return self
+
+    def resize(self, size: int | tuple[int, int]) -> _ImageWrapper:
+        if isinstance(size, int):
+            size = (size, size)
+        self._image = self._image.resize(size)
+        return self
