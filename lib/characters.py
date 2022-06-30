@@ -16,15 +16,27 @@ _ActionDict: TypeAlias = dict[str, dict[str, str | list[str]]]
 
 
 class Characters:
-    BOUNCER: ClassVar[_Bouncer]
-    SANDY: ClassVar[_Sandy]
+    _GREETER: ClassVar[_Greeter]
+    _REPORTER: ClassVar[_Reporter]
 
     @classmethod
     async def initialize(cls) -> None:
         Log.d("Loading character data...")
         _Character.DATA = await Utils.load_json_from_file(name="characters")
-        cls.BOUNCER = _Bouncer()
-        cls.SANDY = _Sandy()
+        cls._GREETER = _Greeter()
+        cls._REPORTER = _Reporter()
+
+    @classmethod
+    async def greet(cls, member: Member) -> None:
+        await cls._GREETER.greet(member)
+
+    @classmethod
+    async def report_member_joined(cls, member: Member) -> None:
+        await cls._REPORTER.report_member_joined(member)
+
+    @classmethod
+    async def report_member_left(cls, member: Member) -> None:
+        await cls._REPORTER.report_member_left(member)
 
 
 @unique
@@ -56,14 +68,17 @@ class _Character:
     DATA: ClassVar[dict[str, Any]]
 
     def __init__(self) -> None:
-        name = self.__class__.__name__.strip("_")
-        Log.d(f'  Initializing character "{name}".')
-        data = type(self).DATA[name.lower()]
+        role = self.__class__.__name__.strip("_")
+        Log.d(f'  Initializing character for role "{role}".')
+        data = type(self).DATA[role.lower()]
 
         self._name: Final[str] = data["name"]
         self._color: Final[int] = int(data["color"], base=16)
         self._avatar_url: Final[str] = data["avatar_url"]
         self._responses: Final[_ActionDict] = _Action.sanitize(data["responses"])
+
+        Log.d(f'    Name: "{self._name}"')
+        Log.d(f"    Supported actions: [{', '.join(self._responses)}]")
 
     def _get_response(self, action: _Action, category: str) -> str:
         response = ""
@@ -102,21 +117,32 @@ class _Character:
         )
 
 
-class _Bouncer(_Character):
-    async def announce_member_joined(self, member: Member) -> None:
+class _Greeter(_Character):
+    async def greet(self, member: Member) -> None:
+        welcome_text = self._get_dialogue(_Action.MEMBER_JOINED, name=member.mention)
+        rules_text = self._get_dialogue(_Action.MENTION_RULES, url=Channel.RULES.url)
+        await self._send_message(
+            action=_Action.MEMBER_JOINED,
+            channel=Channel.WELCOME,
+            text=f"{welcome_text}\n\n{rules_text}",
+        )
+
+
+class _Reporter(_Character):
+    async def report_member_joined(self, member: Member) -> None:
         extra_fields = [
             FieldData("🐣", "Account Created", Utils.format_time(member.created_at)),
         ]
-        await self._announce_member_action(member, _Action.MEMBER_JOINED, extra_fields)
+        await self._report_member_action(member, _Action.MEMBER_JOINED, extra_fields)
 
-    async def announce_member_left(self, member: Member) -> None:
+    async def report_member_left(self, member: Member) -> None:
         extra_fields = [
             FieldData("🌱", "Joined Server", Utils.format_time(member.joined_at)),
             FieldData("🍂", "Server Roles", [role.mention for role in member.roles[1:]]),
         ]
-        await self._announce_member_action(member, _Action.MEMBER_LEFT, extra_fields)
+        await self._report_member_action(member, _Action.MEMBER_LEFT, extra_fields)
 
-    async def _announce_member_action(
+    async def _report_member_action(
         self, member: Member, action: _Action, extra_fields: Iterable[FieldData]
     ) -> None:
         await self._send_message(
@@ -129,15 +155,4 @@ class _Bouncer(_Character):
                 FieldData("🏷️", "Current Tag", Utils.get_member_nametag(member), True),
                 *extra_fields,
             ],
-        )
-
-
-class _Sandy(_Character):
-    async def greet(self, member: Member) -> None:
-        welcome_text = self._get_dialogue(_Action.MEMBER_JOINED, name=member.mention)
-        rules_text = self._get_dialogue(_Action.MENTION_RULES, url=Channel.RULES.url)
-        await self._send_message(
-            action=_Action.MEMBER_JOINED,
-            channel=Channel.WELCOME,
-            text=f"{welcome_text}\n\n{rules_text}",
         )
