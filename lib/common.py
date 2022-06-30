@@ -1,6 +1,7 @@
+import json
+import re
+import string
 from datetime import datetime, timezone
-from json import loads as parse_json
-from string import Template as StandardTemplate
 from typing import Any, Callable, Final, Optional
 
 from aiofiles import open as open_file
@@ -29,17 +30,19 @@ class Config:
         return cls._ENV.get(f"{channel_name.upper()}_CHANNEL_ID", 0)
 
 
-class Template(StandardTemplate):
-    sub: Final[Callable[..., str]] = StandardTemplate.substitute
-    safe_sub: Final[Callable[..., str]] = StandardTemplate.safe_substitute
+class Template(string.Template):
+    sub: Final[Callable[..., str]] = string.Template.substitute
+    safe_sub: Final[Callable[..., str]] = string.Template.safe_substitute
 
 
 class Utils:
-    _HTTP_SESSION: Final[ClientSession] = ClientSession()
+    _CLIENT_SESSION: Final[ClientSession] = ClientSession()
 
     _JSON_FILE_PATH: Final[Template] = Template("assets/data/${name}.json")
     _MEMBER_NAMETAG: Final[Template] = Template("${name}#${tag}")
     _TIME_FORMAT: Final[Template] = Template("<t:${timestamp}> (${elapsed})")
+
+    _TEMPLATE_KEY_PATTERN: Final[re.Pattern] = re.compile(r"\${?(\w*)", re.ASCII)
 
     @classmethod
     def format_time(cls, time: datetime) -> str:
@@ -52,12 +55,27 @@ class Utils:
         return cls._MEMBER_NAMETAG.sub(name=member.name, tag=member.discriminator)
 
     @classmethod
+    def get_template_keys(cls, template_string: str) -> set[str]:
+        return set(cls._TEMPLATE_KEY_PATTERN.findall(template_string))
+
+    @classmethod
     async def load_content_from_url(cls, url: str) -> bytes:
-        async with cls._HTTP_SESSION.get(url) as response:
+        async with cls._CLIENT_SESSION.get(url) as response:
             return await response.read()
 
     @classmethod
-    async def load_json_from_file(cls, name: str) -> dict[str, Any] | list[Any]:
+    async def load_json_from_file(
+        cls, name: str, lowercase_keys: bool = False
+    ) -> dict[str, Any] | list[Any]:
         filename = cls._JSON_FILE_PATH.sub(name=name)
         async with open_file(filename, mode="r", encoding="utf-8") as file:
-            return parse_json(await file.read())
+            result = json.loads(await file.read())
+        return cls._lowercase_keys(result) if lowercase_keys else result
+
+    @classmethod
+    def _lowercase_keys(cls, original: dict[str, Any]) -> dict[str, Any]:
+        result = {}
+        for key, value in original.items():
+            new_value = cls._lowercase_keys(value) if isinstance(value, dict) else value
+            result[key.lower()] = new_value
+        return result
