@@ -7,9 +7,7 @@ from lib.common import Utils
 from lib.logger import Log
 
 
-class Salutations(Cog):
-    """Handles actions to be executed when a member leaves/joins the server."""
-
+class MemberEvents(Cog):
     @Cog.listener()
     async def on_member_join(self, member: Member) -> None:
         Log.i(f"{Utils.get_member_nametag(member)} has joined the server.")
@@ -24,4 +22,4 @@ class Salutations(Cog):
 
 
 def setup(bot: Bot) -> None:
-    bot.add_cog(Salutations(bot))
+    bot.add_cog(MemberEvents(bot))

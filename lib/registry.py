@@ -23,7 +23,7 @@ class CogRegistry(Enum):
         return _COG_MODULE_TEMPLATE.substitute(name=self.name.lower())
 
     """ PRODUCTION COGS - The cogs listed here are functional and (mostly) bug-free. """
-    # None yet!
+    MEMBER_EVENTS = auto()
 
     """ DEVELOPMENT COGS - The cogs listed here may be nonfunctional/unstable/buggy. """
-    SALUTATIONS = auto()
+    # None yet!

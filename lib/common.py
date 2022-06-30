@@ -46,7 +46,6 @@ class Utils:
 
     @classmethod
     def format_time(cls, time: datetime) -> str:
-        # noinspection PyTypeChecker
         elapsed = naturaltime(datetime.now(timezone.utc) - time)
         return cls._TIME_FORMAT.sub(timestamp=int(time.timestamp()), elapsed=elapsed)
 
