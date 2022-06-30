@@ -35,6 +35,10 @@
       "MEMBER_LEFT": {
         "emoji": "💨",
         "dialogue": "$name has left the building."
+      },
+      "MEMBER_RENAMED": {
+        "emoji": "🌹",
+        "dialogue": "$name is now going by another name."
       }
     }
   }

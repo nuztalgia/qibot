@@ -27,8 +27,8 @@ def _assert_valid_emoji(emoji: str) -> None:
 
 @dataclass(frozen=True)
 class FieldData:
-    emoji: str  # Required.
-    title: str  # Required.
+    emoji: str = ""  # Required for non-blank fields.
+    title: str = ""  # Required for non-blank fields.
     content: Optional[str | Iterable[str]] = None
     inline: bool = False
 
@@ -78,22 +78,32 @@ class _FieldsMixin(EmbedData):
     def _validate(self) -> None:
         super()._validate()
         for field in self._fields:
-            _assert_valid_emoji(field.emoji)
-            if not field.title:
-                raise ValueError("A title is required for all fields.")
+            # Validate any non-blank fields. (Blank fields are allowed for formatting.)
+            if field.emoji or field.title or field.content:
+                _assert_valid_emoji(field.emoji)
+                if not field.title:
+                    raise ValueError("A title is required for all fields.")
 
     def build_embed(self) -> Embed:
         embed = super().build_embed()
         for field in self._fields:
-            name = _TEXT_WITH_EMOJI.sub(emoji=field.emoji, text=field.title)
-            if not field.content:
-                val = _EMPTY_FIELD_CONTENT
-            elif isinstance(field.content, str):
-                val = _FIELD_CONTENT.sub(text=field.content)
-            else:
-                val = "\n".join(_FIELD_CONTENT.sub(text=text) for text in field.content)
-            embed.add_field(name=name, value=val, inline=field.inline)
+            embed.add_field(
+                name=_TEXT_WITH_EMOJI.sub(emoji=field.emoji, text=field.title),
+                value=type(self)._get_field_value(field),
+                inline=field.inline,
+            )
         return embed
+
+    @classmethod
+    def _get_field_value(cls, field: FieldData) -> str:
+        if not (field.emoji or field.title):
+            return _SPACING
+        elif not field.content:
+            return _EMPTY_FIELD_CONTENT
+        elif isinstance(field.content, str):
+            return _FIELD_CONTENT.sub(text=field.content)
+        else:
+            return "\n".join(_FIELD_CONTENT.sub(text=text) for text in field.content)
 
 
 class _SimpleEmbedData(EmbedData):
