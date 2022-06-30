@@ -65,7 +65,7 @@ class Utils:
 
     @classmethod
     async def load_json_from_file(
-        cls, name: str, lowercase_keys: bool = False
+        cls, name: str, lowercase_keys: bool = True
     ) -> dict[str, Any] | list[Any]:
         filename = cls._JSON_FILE_PATH.sub(name=name)
         async with open_file(filename, mode="r", encoding="utf-8") as file:

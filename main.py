@@ -68,7 +68,7 @@ class _ReadyListener(Cog):
         Log.i(f'Monitoring server: "{server_name}"')
 
         await Channel.initialize_all(self._bot)
-        await Characters.initialize()  # Must be called after channels are initialized.
+        await Characters.initialize()
 
         await self._bot.change_presence(
             activity=Activity(type=ActivityType.watching, name="everything.")

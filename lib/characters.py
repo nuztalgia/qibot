@@ -12,7 +12,7 @@ from lib.embeds import EmbedData, FieldData
 from lib.images import ImageUtils
 from lib.logger import Log
 
-_ActionDict: TypeAlias = dict[str, str | list[str]]
+_ActionDict: TypeAlias = dict[str, dict[str, str | list[str]]]
 
 
 class Characters:
@@ -39,7 +39,7 @@ class _Action(Enum):
 
     @classmethod
     def _is_defined(cls, key: str) -> bool:
-        return any(member for member in cls if key.lower() == member.key)
+        return any(action for action in cls if key == action.key)
 
     @classmethod
     def sanitize(cls, action_dict: _ActionDict) -> _ActionDict:
@@ -51,47 +51,48 @@ class _Action(Enum):
                 Log.w(f'  "{key}" is not a recognized action. Ignoring.')
         return sanitized_dict
 
-    def get_response(self, action_dict: _ActionDict) -> str:
-        response = ""
-        if self.key in action_dict:
-            # Use the single defined string, or a random choice from the defined list.
-            response = action_dict[self.key]
-            if isinstance(response, list):
-                response = choose_random(response)
-        return response
-
 
 class _Character:
     DATA: ClassVar[dict[str, Any]]
 
     def __init__(self) -> None:
-        self._name: Final[str] = self.__class__.__name__.strip("_").title()
+        name = self.__class__.__name__.strip("_")
+        Log.d(f'  Initializing character "{name}".')
+        data = type(self).DATA[name.lower()]
 
-        Log.d(f"  Initializing character: {self._name.upper()}")
-        data: Final[dict[str, Any]] = type(self).DATA[self._name.upper()]
-
-        self._avatar_url: Final[str] = data["avatar_url"]
+        self._name: Final[str] = data["name"]
         self._color: Final[int] = int(data["color"], base=16)
-        self._dialogue: Final[_ActionDict] = _Action.sanitize(data["dialogue"])
-        self._emoji: Final[_ActionDict] = _Action.sanitize(data["emoji"])
+        self._avatar_url: Final[str] = data["avatar_url"]
+        self._responses: Final[_ActionDict] = _Action.sanitize(data["responses"])
+
+    def _get_response(self, action: _Action, category: str) -> str:
+        response = ""
+        if action.key in self._responses:
+            # Use the single defined string, or a random choice from the defined list.
+            response = self._responses[action.key].get(category, response)
+            if isinstance(response, list):
+                response = choose_random(response)
+        return response
 
     def _get_dialogue(self, action: _Action, **kwargs) -> str:
-        dialogue = action.get_response(self._dialogue)
+        dialogue = self._get_response(action, "dialogue")
         if not dialogue:
             Log.e(f'Dialogue for "{action.key}" is not defined for {self._name}.')
-        return Template(dialogue).safe_sub(kwargs)
-
-    def _get_emoji(self, action: _Action) -> str:
-        return action.get_response(self._emoji)
+        available_subs = self._responses[action.key] | kwargs
+        while available_subs.keys() & Utils.get_template_keys(dialogue):
+            dialogue = Template(dialogue).safe_sub(available_subs)
+        return dialogue
 
     async def _send_message(
         self,
+        action: _Action,
         channel: Channel,
         text: str,
-        emoji: str = "",
         thumbnail: Optional[str | File] = None,
         fields: Optional[Iterable[FieldData]] = None,
     ) -> None:
+        emoji = self._get_response(action, "emoji")
+        thumbnail = thumbnail or self._get_response(action, "thumbnail")
         embed_data = EmbedData.create(self._color, text, emoji, thumbnail, fields)
         await (await channel.get_webhook()).send(
             username=self._name,
@@ -119,9 +120,9 @@ class _Bouncer(_Character):
         self, member: Member, action: _Action, extra_fields: Iterable[FieldData]
     ) -> None:
         await self._send_message(
+            action=action,
             channel=Channel.LOGGING,
             text=f"**{self._get_dialogue(action, name=member.mention)}**",
-            emoji=self._get_emoji(action),
             thumbnail=await ImageUtils.get_member_avatar(member),
             fields=[
                 FieldData("❄", "Unique ID", str(member.id), True),
@@ -132,18 +133,11 @@ class _Bouncer(_Character):
 
 
 class _Sandy(_Character):
-    def __init__(self) -> None:
-        super().__init__()
-        self.rules_text: Final[str] = self._get_dialogue(
-            action=_Action.MENTION_RULES,
-            rules=f'[rules]({Channel.RULES.url} "Go on... click the link!")',
-        )
-
     async def greet(self, member: Member) -> None:
         welcome_text = self._get_dialogue(_Action.MEMBER_JOINED, name=member.mention)
+        rules_text = self._get_dialogue(_Action.MENTION_RULES, url=Channel.RULES.url)
         await self._send_message(
+            action=_Action.MEMBER_JOINED,
             channel=Channel.WELCOME,
-            text=f"{welcome_text}\n\n{self.rules_text}",
-            emoji=self._get_emoji(_Action.MEMBER_JOINED),
-            thumbnail="assets/images/sandy_wave.gif",  # TODO: Personalize this image.
+            text=f"{welcome_text}\n\n{rules_text}",
         )
