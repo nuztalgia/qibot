@@ -52,7 +52,7 @@ class EmbedData:
         return Embed(color=self._color)
 
     def get_files(self) -> list[File]:
-        return self._files if self._files else Embed.Empty
+        return self._files or Embed.Empty
 
     @staticmethod
     def create(
@@ -134,14 +134,13 @@ class _ThumbnailEmbedData(_SimpleEmbedData):
         self._thumbnail: str | File = thumbnail  # Intentionally not marked "Final".
 
     def _validate(self) -> None:
-        if isinstance(self._thumbnail, str):
-            # Convert the thumbnail string into a File if it exists and is valid.
-            # Otherwise, assume it's a URL and leave it for Discord to deal with.
-            if Path(self._thumbnail).is_file():
-                self._thumbnail = File(fp=self._thumbnail)
+        # Convert the thumbnail string into a File if it exists and is valid.
+        # Otherwise, assume it's a URL and leave it for Discord to deal with.
+        if isinstance(self._thumbnail, str) and Path(self._thumbnail).is_file():
+            self._thumbnail = File(fp=self._thumbnail)
 
+        # Wrangle the File into the expected fields & format required by Discord.
         if isinstance(self._thumbnail, File):
-            # Wrangle the File into the expected fields & format required by Discord.
             thumbnail_url = _ATTACHMENT_URL.sub(filename=self._thumbnail.filename)
             self._files.append(self._thumbnail)
             self._thumbnail = thumbnail_url
