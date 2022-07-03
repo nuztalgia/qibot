@@ -26,27 +26,11 @@ limitations under the License.
 This project leverages a number of third-party libraries, all of which are
 open source and listed here in alphabetical order:
 
-- **aiofiles**
-• [GitHub](https://github.com/Tinche/aiofiles)
-• [PyPI](https://pypi.org/project/aiofiles/)
-• ![PyPI - License](https://img.shields.io/pypi/l/aiofiles)
-- **aiohttp**
-• [GitHub](https://github.com/aio-libs/aiohttp)
-• [PyPI](https://pypi.org/project/aiohttp/)
-• ![PyPI - License](https://img.shields.io/pypi/l/aiohttp)
-- **humanize**
-• [GitHub](https://github.com/python-humanize/humanize)
-• [PyPI](https://pypi.org/project/humanize/)
-• ![PyPI - License](https://img.shields.io/pypi/l/humanize)
-- **Pillow**
-• [GitHub](https://github.com/python-pillow/Pillow)
-• [PyPI](https://pypi.org/project/Pillow/)
-• ![PyPI - License](https://img.shields.io/pypi/l/Pillow)
-- **Pycord**
-• [GitHub](https://github.com/Pycord-Development/pycord)
-• [PyPI](https://pypi.org/project/py-cord/)
-• ![PyPI - License](https://img.shields.io/pypi/l/py-cord)
-- **python-dotenv**
-• [GitHub](https://github.com/theskumar/python-dotenv)
-• [PyPI](https://pypi.org/project/python-dotenv/)
-• ![PyPI - License](https://img.shields.io/pypi/l/python-dotenv)
+| Project | Release | License |
+| ------- | ------- | ------- |
+| [aiofiles](https://github.com/Tinche/aiofiles) | [![Release](https://img.shields.io/pypi/v/aiofiles)](https://pypi.org/project/aiofiles/) | [![License](https://img.shields.io/pypi/l/aiofiles)](https://github.com/Tinche/aiofiles/blob/master/LICENSE) |
+| [aiohttp](https://github.com/aio-libs/aiohttp) | [![Release](https://img.shields.io/pypi/v/aiohttp)](https://pypi.org/project/aiohttp/) | [![License](https://img.shields.io/pypi/l/aiohttp)](https://github.com/aio-libs/aiohttp/blob/master/LICENSE.txt) |
+| [humanize](https://github.com/python-humanize/humanize) | [![Release](https://img.shields.io/pypi/v/humanize)](https://pypi.org/project/humanize/) | [![License](https://img.shields.io/pypi/l/humanize)](https://github.com/python-humanize/humanize/blob/main/LICENCE) |
+| [Pillow](https://github.com/python-pillow/Pillow) | [![Release](https://img.shields.io/pypi/v/Pillow)](https://pypi.org/project/Pillow/) | [![License](https://img.shields.io/pypi/l/Pillow)](https://github.com/python-pillow/Pillow/blob/main/LICENSE) |
+| [Pycord](https://github.com/Pycord-Development/pycord) | [![Release](https://img.shields.io/pypi/v/py-cord)](https://pypi.org/project/py-cord/) | [![License](https://img.shields.io/pypi/l/py-cord)](https://github.com/Pycord-Development/pycord/blob/master/LICENSE) |
+| [python-dotenv](https://github.com/theskumar/python-dotenv) | [![Release](https://img.shields.io/pypi/v/python-dotenv)](https://pypi.org/project/python-dotenv/) | [![License](https://img.shields.io/pypi/l/python-dotenv)](https://github.com/theskumar/python-dotenv/blob/master/LICENSE) |
