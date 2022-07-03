@@ -4,30 +4,14 @@ import string
 from datetime import datetime, timezone
 from typing import Any, Callable, Final, Optional
 
-from aiofiles import open as open_file
 from aiohttp import ClientSession
 from discord import Member
-from dotenv import dotenv_values, find_dotenv
 from humanize import naturaltime
 
 
 class Constants:
     QI_BOT_VERSION: Final[str] = "0.1.0"
     DEFAULT_COMMAND_PREFIX: Final[str] = "."
-
-
-class Config:
-    _ENV: Final[dict[str, Any]] = dotenv_values(dotenv_path=find_dotenv(), verbose=True)
-
-    BOT_TOKEN: Final[str] = _ENV["BOT_TOKEN"]
-    SERVER_ID: Final[int] = int(_ENV["SERVER_ID"])
-    DEV_MODE_ENABLED: Final[bool] = _ENV.get("DEV_MODE_ENABLED", False)
-    CUSTOM_COMMAND_PREFIX: Final[Optional[str]] = _ENV.get("CUSTOM_COMMAND_PREFIX")
-    CUSTOM_LOG_THRESHOLD: Final[Optional[str]] = _ENV.get("CUSTOM_LOG_THRESHOLD")
-
-    @classmethod
-    def get_channel_id(cls, channel_name: str) -> int:
-        return cls._ENV.get(f"{channel_name.upper()}_CHANNEL_ID", 0)
 
 
 class Template(string.Template):
@@ -38,7 +22,7 @@ class Template(string.Template):
 class Utils:
     _CLIENT_SESSION: Final[ClientSession] = ClientSession()
 
-    _JSON_FILE_PATH: Final[Template] = Template("assets/data/${name}.json")
+    _JSON_FILE_PATH: Final[Template] = Template("${path}/${name}.json")
     _MEMBER_NAMETAG: Final[Template] = Template("${name}#${tag}")
     _TIME_FORMAT: Final[Template] = Template("<t:${timestamp}> (${elapsed})")
 
@@ -63,12 +47,12 @@ class Utils:
             return await response.read()
 
     @classmethod
-    async def load_json_from_file(
-        cls, name: str, lowercase_keys: bool = True
+    def load_json_from_file(
+        cls, filename: str, path: str = "assets/data/", lowercase_keys: bool = True
     ) -> dict[str, Any] | list[Any]:
-        filename = cls._JSON_FILE_PATH.sub(name=name)
-        async with open_file(filename, mode="r", encoding="utf-8") as file:
-            result = json.loads(await file.read())
+        full_path = cls._JSON_FILE_PATH.sub(path=path, name=filename)
+        with open(full_path, mode="r", encoding="utf-8") as file:
+            result = json.load(file)
         return cls._lowercase_keys(result) if lowercase_keys else result
 
     @classmethod
@@ -78,3 +62,17 @@ class Utils:
             new_value = cls._lowercase_keys(value) if isinstance(value, dict) else value
             result[key.lower()] = new_value
         return result
+
+
+class Config:
+    _CONFIG: Final[dict[str, Any]] = Utils.load_json_from_file("config", path=".")
+
+    BOT_TOKEN: Final[str] = _CONFIG["bot_token"]
+    SERVER_ID: Final[int] = _CONFIG["server_id"]
+    DEV_MODE_ENABLED: Final[bool] = _CONFIG.get("dev_mode_enabled", False)
+    CUSTOM_COMMAND_PREFIX: Final[Optional[str]] = _CONFIG.get("custom_command_prefix")
+    CUSTOM_LOG_THRESHOLD: Final[Optional[str]] = _CONFIG.get("custom_log_threshold")
+
+    @classmethod
+    def get_channel_id(cls, channel_name: str) -> int:
+        return cls._CONFIG["channel_ids"].get(channel_name.lower(), 0)
