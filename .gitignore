@@ -1,4 +1,8 @@
-venv/*
-.idea/*
-*.pyc
+*.bak
+*.py[cdo]
+*.sw[a-p]
+.DS_Store
+.idea/
+.vscode/
 config.json
+venv/
