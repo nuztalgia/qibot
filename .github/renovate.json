@@ -1,0 +1,15 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:base"],
+  "automerge": true,
+  "automergeType": "branch",
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": ["py-cord"],
+      "automerge": false
+    }
+  ],
+  "assignees": ["nuztalgia"],
+  "dependencyDashboardAutoclose": true
+}
