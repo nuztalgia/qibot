@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum, auto, unique
 from random import choice as choose_random
-from typing import Any, ClassVar, Final, Iterable, Optional, TypeAlias
+from typing import Any, ClassVar, Final, Iterable, TypeAlias
 
 from discord import File, Member
 
@@ -101,7 +101,9 @@ class _Character:
         response = ""
         if action.key in self._responses:
             # Use the single defined string, or a random choice from the defined list.
-            response = self._responses[action.key].get(category, response)
+            response = self._responses[action.key].get(
+                category, response
+            )  # type: ignore[assignment]
             if isinstance(response, list):
                 response = choose_random(response)
         return response
@@ -120,8 +122,8 @@ class _Character:
         action: _Action,
         channel: Channel,
         text: str,
-        thumbnail: Optional[str | File] = None,
-        fields: Optional[Iterable[FieldData]] = None,
+        thumbnail: str | File | None = None,
+        fields: Iterable[FieldData] | None = None,
     ) -> None:
         emoji = self._get_response(action, "emoji")
         thumbnail = thumbnail or self._get_response(action, "thumbnail")

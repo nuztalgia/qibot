@@ -4,9 +4,11 @@ from io import BytesIO
 from pathlib import Path
 from typing import Final, Literal, TypeAlias
 
-from PIL.Image import Image, new as new_image, open as open_image
-from PIL.ImageDraw import Draw
 from discord import Asset, File, Member
+from PIL.Image import Image
+from PIL.Image import new as new_image
+from PIL.Image import open as open_image
+from PIL.ImageDraw import Draw
 
 from lib.common import Template, Utils
 

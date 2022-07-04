@@ -65,7 +65,9 @@ class Utils:
 
 
 class Config:
-    _CONFIG: Final[dict[str, Any]] = Utils.load_json_from_file("config", path=".")
+    _CONFIG: Final[dict[str, Any]] = Utils.load_json_from_file(
+        "config", path="."
+    )  # type: ignore[assignment]
 
     BOT_TOKEN: Final[str] = _CONFIG["bot_token"]
     SERVER_ID: Final[int] = _CONFIG["server_id"]

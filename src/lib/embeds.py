@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Final, Iterable, Optional
+from typing import Final, Iterable
 
 from discord import Embed, File
 
@@ -29,7 +29,7 @@ def _assert_valid_emoji(emoji: str) -> None:
 class FieldData:
     emoji: str = ""  # Required for non-blank fields.
     title: str = ""  # Required for non-blank fields.
-    content: Optional[str | Iterable[str]] = None
+    content: str | Iterable[str] | None = None
     inline: bool = False
 
 
@@ -59,8 +59,8 @@ class EmbedData:
         color: int = 0,
         text: str = "",
         emoji: str = "",
-        thumbnail: Optional[str | File] = None,
-        fields: Optional[Iterable[FieldData]] = None,
+        thumbnail: str | File | None = None,
+        fields: Iterable[FieldData] | None = None,
     ) -> EmbedData:
         params = locals()
         cls = _ThumbnailEmbedData if params.get("thumbnail") else _SimpleEmbedData

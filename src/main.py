@@ -81,7 +81,7 @@ class _ReadyListener(Cog):
             Log.e(
                 f"This bot account is in {server_count} servers (expected: 1). Exiting."
             )
-            return
+            return None
 
         server = self._bot.guilds[0]
         if server.id != self._server_id:
@@ -89,7 +89,7 @@ class _ReadyListener(Cog):
                 f'This bot is running in an unexpected server: "{server.name}"'
                 f"{Log.NEWLINE}Make sure the SERVER_ID is configured properly. Exiting."
             )
-            return
+            return None
 
         return server.name
 
