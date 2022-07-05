@@ -55,4 +55,4 @@ Covenant](https://www.contributor-covenant.org). The original text is available
 [here](https://www.contributor-covenant.org/version/2/1/code_of_conduct/) in
 English, and [here](https://www.contributor-covenant.org/translations/) in other
 languages. For answers to common questions about this code of conduct, please
-visit the Contributor Covenant [FAQ](https://www.contributor-covenant.org/faq).
+see the [FAQ](https://www.contributor-covenant.org/faq).

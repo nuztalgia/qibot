@@ -1,7 +1,7 @@
 # Copyright
 
-**QiBot**  
-**Copyright 2022 Nuztalgia**
+**QiBot**\
+**Copyright 2022, Nuztalgia and other contributors**
 
 All content is the property of the respective authors or their employers. For
 more information regarding authorship of content, please consult the listed
@@ -25,7 +25,7 @@ limitations under the License.
 
 This project depends on a number of third-party open source Python libraries.
 The following table includes links to their respective GitHub repositories,
-PyPI distribution pages, and LICENSE files:
+PyPI distribution pages, and full license text:
 
 | Project | Release | License |
 | ------- | ------- | ------- |

@@ -2,7 +2,7 @@
 
 Thanks for your interest in contributing to this project! 💖 All types of
 contributions are encouraged and valued. If you haven't done so already, please
-take a couple of minutes to read through the [code of conduct](./CODE_OF_CONDUCT.md).
+take a couple of minutes to read through our [code of conduct](CODE_OF_CONDUCT.md).
 
 ## Issues
 
@@ -10,13 +10,19 @@ If you'd like to ask a question, report a bug, suggest a feature, or provide
 any other kind of feedback, feel free to open an issue in this repository.
 While filing issue(s), please keep the following guidelines in mind:
 
-- Always provide as much context and/or relevant information as you can.
+- Provide as much context and relevant information as you can.
+  Be descriptive, and include screenshots if applicable.
 - For **bug reports**, include detailed instructions that someone else can
   follow to reproduce the bug or error.
 - For **feature requests**, try and be clear about why existing features and
   alternatives do not work for you.
-- Before creating a new issue, look through the [existing ones](/issues?q=is%3Aissue)
+- Before opening a new issue, do a cursory search through the
+  [existing ones](https://github.com/nuztalgia/qibot/issues?q=is%3Aissue)
   to make sure you aren't duplicating any of them.
+  - If you find an issue similar to the one you have, there's no need to create
+    a new one! You can react to the existing issue with 👍 to indicate your
+    interest, and/or comment on it if there's any extra information you'd like
+    to add.
 
 ## Pull Requests
 
@@ -29,6 +35,7 @@ in advance!
 
 If you're new to GitHub or have never filed a PR before, you might
 find these resources helpful:
+
 - [This tutorial](https://docs.github.com/en/get-started/quickstart/contributing-to-projects)
   will teach you the basics of how to contribute to a repository by forking it
   and creating a pull request.
@@ -45,15 +52,18 @@ find these resources helpful:
 ### After you open a PR
 
 The [pre-commit.ci](https://pre-commit.ci/) tool will run some checks to ensure
-your changes are consistent with the [config](/.pre-commit-config.yaml) for this repo.
+that your changes are consistent with the [config](/.pre-commit-config.yaml)
+for this repo.
+
 - Some failing checks may be automatically fixed by the tool, and the resulting
   changes will be added to your PR as a subsequent commit.
 - Some things may require manual fixing. You can make the requested changes in
   your local copy of the repo, then commit and push to your PR branch again.
   This will update the PR and trigger a re-run of all the checks.
 
-Once your PR passes all of the pre-commit checks, a project maintainer will
+Once your PR **passes all pre-commit checks**, a project maintainer will
 review it.
+
 - If the maintainer asks for any changes: make the necessary edits, commit and
   push to your PR branch, and then ask for another review. This back-and-forth
   may happen more than once, especially if your changes are non-trivial.
@@ -63,4 +73,4 @@ review it.
   this project, and hope to see other contributions from you in the future. 💗
 - If your PR gets accepted, it will be merged into the repository's `main`
   branch. This means your contribution has officially become part of this
-  project and will be distributed to our users soon!
+  project and will be distributed to our users soon! 🎉
