@@ -18,9 +18,9 @@ assignees: ''
 
 ### Reproduction Steps
 <!-- What did you do that caused this bug to occur? -->
-1)
-2)
-3)
+1. 
+2. 
+3. 
 <!-- You can add more numbers if needed. Detailed steps are very helpful! -->
 
 ### Expected Behavior
