@@ -21,6 +21,13 @@
 <!-- Is there any more information that could help other people understand this
      PR (e.g. implementation details, reasoning)? If so, please provide it. -->
 
+### Checklist
+<!-- All of the following statements MUST be true in order for this PR to be
+     considered. Put an "x" inside each box to check it, like so: [x] -->
+- [ ] I have read this project's `CODE_OF_CONDUCT` and `CONTRIBUTING` guidelines.
+- [ ] This contribution fully complies with this project's license (Apache-2.0).
+- [ ] This contribution fully complies with the Developer Certificate of Origin.
+
 <!-- OPTIONAL: Feel free to remove any sections of this template that you
      didn't use, or that aren't relevant to this PR. -->
 

@@ -26,7 +26,7 @@ repos:
       - id: mixed-line-ending
         args: [--fix=auto]
       - id: trailing-whitespace
-        exclude: ^\.github\/(ISSUE|PULL_REQUEST)_TEMPLATE\/[a-z_-]*\.md$
+        exclude: ^\.github\/(ISSUE_TEMPLATE\/[a-z-]*|PULL_REQUEST_TEMPLATE)\.md$
 
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.9.0

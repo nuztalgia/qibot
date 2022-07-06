@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing to this project! 💖 All types of
+Thank you for your interest in contributing to this project! 💖 All types of
 contributions are encouraged and valued. If you haven't done so already, please
 take a couple of minutes to read through our [code of conduct](CODE_OF_CONDUCT.md).
 
@@ -61,7 +61,7 @@ for this repo.
   your local copy of the repo, then commit and push to your PR branch again.
   This will update the PR and trigger a re-run of all the checks.
 
-Once your PR **passes all pre-commit checks**, a project maintainer will
+Once your PR passes **all pre-commit checks**, a project maintainer will
 review it.
 
 - If the maintainer asks for any changes: make the necessary edits, commit and
@@ -71,6 +71,21 @@ review it.
   contribution and explain why they won't be accepting those particular changes.
   That's okay! We still really appreciate you devoting your time to help improve
   this project, and hope to see other contributions from you in the future. 💗
-- If your PR gets accepted, it will be merged into the repository's `main`
-  branch. This means your contribution has officially become part of this
-  project and will be distributed to our users soon! 🎉
+- If the maintainer accepts your PR, it will be merged into the repository's
+  `main` branch. This means that your contribution has officially become part
+  of this project and will be distributed to our users soon! 🎉
+
+### Licensing
+
+This project is licensed under
+[Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0) (the "License").
+All contributions to this project's codebase must adhere to the License,
+as stipulated by the [`LICENSE`](/.LICENSE) and [`NOTICE`](/.NOTICE.md)
+files in this repository.
+
+Furthermore, by submitting a pull request to this repository, you certify that
+you wrote or otherwise have the appropriate rights to submit **all** of the code
+included in that PR to this project. Essentially, your contributions must comply
+with the [Developer Certificate of Origin](https://developercertificate.org/),
+which protects this project as well as all of its contributors. For more
+information, see our [`DEVELOPER_CERTIFICATE`](DEVELOPER_CERTIFICATE.md) file.
