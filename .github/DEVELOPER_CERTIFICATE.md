@@ -9,18 +9,19 @@ In essence, the DCO ensures that every contribution to this project:
 2) Is submitted with the understanding that the contributor has the
    appropriate rights to do so.
 
-The full text of the DCO can be found [below](#dco-v11-full-text) or on its
-website: [http://developercertificate.org](http://developercertificate.org)
+The full text of the DCO can be found [below](#dco-v11---full-text)
+or at its official source: <http://developercertificate.org>
 
 ## Our Process
 
-In the description of every pull request that you submit to this repository,
-you'll be asked to check a box that looks like this:
+In the body of every pull request that you submit to this repository,
+you'll be prompted to check a box that looks like this:
 
-- [ ] This contribution fully complies with the Developer Certificate of Origin.
+> - [x] This contribution fully complies with the
+>       Developer Certificate of Origin.
 
 Checking that box signifies that you've read through the
-[full text](#dco-v11-full-text) of the DCO and that it holds true for the
+[full text](#dco-v11---full-text) of the DCO and that it holds true for the
 entire contents of your pull request. Every single PR made to this project
 **must** have that box checked before it can be accepted and merged into
 our codebase.

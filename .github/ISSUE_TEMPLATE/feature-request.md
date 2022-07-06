@@ -7,29 +7,41 @@ assignees: ''
 
 ---
 
-<!-- Thank you for taking the time to suggest a feature! -->
-<!-- NOTE: Lines of text inside brackets like these are comments. They're meant
-     as a guide to help you properly fill out this template, and won't be
-     publicly visible once the issue is created (check out the "Preview" tab).
-     Feel free to ignore the comments if you know what you're doing! -->
+<!-- NOTE: Lines of text inside brackets like these are comments. 💬
+     They're just to help you properly fill out this template, and won't
+     be visible in the final result. (Check out the "Preview" tab!) -->
 
 ### Summary
-<!-- Please provide a clear and concise description of the feature request. -->
+<!-- Please provide a clear and concise description of your feature request. -->
 
 ### Problem
-<!-- What problem does the idea solve? What does it make easier or possible? -->
+<!-- What problem(s) does this feature solve? What does it simplify/enable? -->
 
 ### Current Solution
-<!-- Are there any existing solutions to the problem? If so, what are they? -->
+<!-- Are there any existing solutions to this problem? If so, what are they? -->
 
 ### Ideal Solution
-<!-- What is your ideal solution to the problem? What should the feature do? -->
+<!-- What is the ideal solution to this problem? What exactly would you like it
+     to do? How should it look and/or behave? Details are extremely helpful! -->
 
 ### Alternatives
-<!-- Describe any alternative solutions or features you've considered. -->
+<!-- Have you considered any alternative implementations or solutions to the
+     problem? Please describe how they differ and what they could look like. -->
 
-### Screenshots
-<!-- If applicable, add screenshots to help explain what you'd like to see. -->
+### Images
+<!-- If applicable, please include images (e.g. screenshots, mockups,
+     gifs) to help illustrate what you'd like to see in this feature. -->
 
 ### Additional Context
-<!-- Add any other context about your feature request here. -->
+<!-- Do you have any more information that could help other people
+     understand this feature request? If so, please include it here. -->
+
+### Checklist
+<!-- REQUIRED. Put an "x" inside each box to check it, like so: [x] -->
+- [ ] I have read this project's `CODE_OF_CONDUCT` and `CONTRIBUTING` guidelines.
+- [ ] I have looked through the existing issues to ensure this isn't a duplicate.
+
+<!-- OPTIONAL: Feel free to remove any sections of this template that
+     you didn't use, or that aren't relevant to this feature request. -->
+
+<!-- Thanks for taking the time to suggest a feature. ✨ We appreciate it! -->

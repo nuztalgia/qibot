@@ -1,6 +1,6 @@
 <!-- NOTE: Lines of text inside brackets like these are comments. 💬
      They're just to help you properly fill out this template, and won't
-     be visible after this is published (check out the "Preview" tab). -->
+     be visible in the final result. (Check out the "Preview" tab!) -->
 
 ### Relevant Issues
 <!-- If this PR affects an issue, please note which one(s) and how so. You can
@@ -28,8 +28,8 @@
 - [ ] This contribution fully complies with this project's license (Apache-2.0).
 - [ ] This contribution fully complies with the Developer Certificate of Origin.
 
-<!-- OPTIONAL: Feel free to remove any sections of this template that you
-     didn't use, or that aren't relevant to this PR. -->
+<!-- OPTIONAL: Feel free to remove any sections of this template
+     that you didn't use, or that aren't relevant to this PR. -->
 
 <!-- Thank you so much for taking the time to send a pull request! 💖
      Your contribution is very much appreciated, and will be addressed soon. -->

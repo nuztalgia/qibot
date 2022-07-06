@@ -51,12 +51,12 @@ find these resources helpful:
 
 ### After you open a PR
 
-The [pre-commit.ci](https://pre-commit.ci/) tool will run some checks to ensure
-that your changes are consistent with the [config](/.pre-commit-config.yaml)
-for this repo.
+The [pre-commit](https://pre-commit.com/) CI service will
+run some checks to ensure that your changes keep this project
+[clean, green, and healthy](https://results.pre-commit.ci/latest/github/nuztalgia/qibot/main).
 
-- Some failing checks may be automatically fixed by the tool, and the resulting
-  changes will be added to your PR as a subsequent commit.
+- Some failing checks may be automatically fixed by the service, and the
+  resulting changes will be added to your PR as a subsequent commit.
 - Some things may require manual fixing. You can make the requested changes in
   your local copy of the repo, then commit and push to your PR branch again.
   This will update the PR and trigger a re-run of all the checks.
@@ -80,11 +80,11 @@ review it.
 This project is licensed under
 [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0) (the "License").
 All contributions to this project's codebase must adhere to the License,
-as stipulated by the [`LICENSE`](/.LICENSE) and [`NOTICE`](/.NOTICE.md)
+as stipulated by the [`LICENSE`](/LICENSE) and [`NOTICE`](/NOTICE.md)
 files in this repository.
 
-Furthermore, by submitting a pull request to this repository, you certify that
-you wrote or otherwise have the appropriate rights to submit **all** of the code
+Furthermore, by submitting a pull request to this repo, you certify that you
+authored or otherwise have the necessary rights to submit **all** of the code
 included in that PR to this project. Essentially, your contributions must comply
 with the [Developer Certificate of Origin](https://developercertificate.org/),
 which protects this project as well as all of its contributors. For more
