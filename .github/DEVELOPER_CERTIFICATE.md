@@ -1,15 +1,15 @@
 # Developer Certificate of Origin
 
-We respect intellectual property rights and want to make sure all incoming
+We respect intellectual property rights and want to make sure that all incoming
 contributions are correctly attributed and licensed. The Developer Certificate
 of Origin (or "DCO" for short) is a lightweight mechanism to help us do this.
 In essence, the DCO ensures that every contribution to this project:
 
-1) Is authored by the contributor, and/or
-2) Is submitted with the understanding that the contributor has the
-   appropriate rights to do so.
+1) Is originally authored by the person contributing it, and/or
+2) Is submitted with the understanding that the person
+   contributing it has the appropriate rights to do so.
 
-The full text of the DCO can be found [below](#dco-v11---full-text)
+The full text of the DCO can be found [below](#dco-v11-full-text)
 or at its official source: <http://developercertificate.org>
 
 ## Our Process
@@ -20,19 +20,18 @@ you'll be prompted to check a box that looks like this:
 > - [x] This contribution fully complies with the
 >       Developer Certificate of Origin.
 
-Checking that box signifies that you've read through the
-[full text](#dco-v11---full-text) of the DCO and that it holds true for the
-entire contents of your pull request. Every single PR made to this project
-**must** have that box checked before it can be accepted and merged into
-our codebase.
+Checking that box signifies that you've read through the **full text** of the
+DCO and that it holds true for the **entire** contents of your pull request.
+Every single PR made to this project **must** have that box checked
+before it can be reviewed, accepted, and merged into our codebase.
 
 Conventionally, projects that use the DCO require contributors to "sign off"
 on every `git commit`, and often enforce the use of real names and/or email
 addresses. While it's true that those policies are advantageous for legal
-reasons, we don't feel that it's necessary to impose those requirements on
-contributors to this project. Pseudonyms and anonymity are acceptable, and
-we'll take your word for it when you check the box that says your contributions
-comply with the DCO.
+reasons, we don't feel that it's necessary to impose those requirements
+on contributors to this particular project. Pseudonyms and anonymity are
+acceptable, and we'll take your word for it when you check the box that
+affirms your compliance with the DCO.
 
 ## Further Reading
 
@@ -44,7 +43,7 @@ articles to read:
 - [Developer Certificate of Origin versus Contributor License Agreements](https://julien.ponge.org/blog/developer-certificate-of-origin-versus-contributor-license-agreements/)
 - [The most powerful contributor agreement](https://lwn.net/Articles/592503/)
 
-## DCO v1.1 - Full Text
+## DCO v1.1 Full Text
 
 ```text
 Developer Certificate of Origin

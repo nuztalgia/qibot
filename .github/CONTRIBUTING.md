@@ -77,15 +77,14 @@ review it.
 
 ### Licensing
 
-This project is licensed under
-[Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0) (the "License").
-All contributions to this project's codebase must adhere to the License,
-as stipulated by the [`LICENSE`](/LICENSE) and [`NOTICE`](/NOTICE.md)
-files in this repository.
+This project is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
+All contributions to this project's codebase **must** adhere to that license,
+as stipulated by the [`LICENSE`](/LICENSE) and [`NOTICE`](/NOTICE.md) files
+in this repository.
 
 Furthermore, by submitting a pull request to this repo, you certify that you
 authored or otherwise have the necessary rights to submit **all** of the code
 included in that PR to this project. Essentially, your contributions must comply
 with the [Developer Certificate of Origin](https://developercertificate.org/),
-which protects this project as well as all of its contributors. For more
-information, see our [`DEVELOPER_CERTIFICATE`](DEVELOPER_CERTIFICATE.md) file.
+which protects this project and all of its contributors. For more information,
+please see our [`DEVELOPER_CERTIFICATE`](DEVELOPER_CERTIFICATE.md) file.
