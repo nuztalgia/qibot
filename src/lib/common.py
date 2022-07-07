@@ -9,11 +9,6 @@ from discord import Member
 from humanize import naturaltime
 
 
-class Constants:
-    QI_BOT_VERSION: Final[str] = "0.1.0"
-    DEFAULT_COMMAND_PREFIX: Final[str] = "."
-
-
 class Template(string.Template):
     sub: Final[Callable[..., str]] = string.Template.substitute
     safe_sub: Final[Callable[..., str]] = string.Template.safe_substitute
@@ -66,14 +61,13 @@ class Utils:
 
 class Config:
     _CONFIG: Final[dict[str, Any]] = Utils.load_json_from_file(
-        "config", path="."
+        filename="config", path="."
     )  # type: ignore[assignment]
 
     BOT_TOKEN: Final[str] = _CONFIG["bot_token"]
     SERVER_ID: Final[int] = _CONFIG["server_id"]
     DEV_MODE_ENABLED: Final[bool] = _CONFIG.get("dev_mode_enabled", False)
-    CUSTOM_COMMAND_PREFIX: Final[Optional[str]] = _CONFIG.get("custom_command_prefix")
-    CUSTOM_LOG_THRESHOLD: Final[Optional[str]] = _CONFIG.get("custom_log_threshold")
+    LOG_THRESHOLD: Final[Optional[str]] = _CONFIG.get("log_threshold")
 
     @classmethod
     def get_channel_id(cls, channel_name: str) -> int:

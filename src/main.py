@@ -1,46 +1,19 @@
-from typing import Final, Optional
+from discord import AllowedMentions, Intents, LoginFailure
 
-from discord import Activity, ActivityType, AllowedMentions, Cog, Intents, LoginFailure
-from discord.ext.commands import Bot
-
-from lib.channels import Channel
-from lib.characters import Characters
-from lib.common import Config, Constants
+from lib.common import Config
 from lib.logger import Log
 from lib.registry import CogRegistry
+from qibot import QiBot
 
 
-def run_bot() -> None:
-    custom_prefix = Config.CUSTOM_COMMAND_PREFIX
-    prefix = custom_prefix or Constants.DEFAULT_COMMAND_PREFIX
-
-    prefix_label = f' with custom prefix "{custom_prefix}"' if custom_prefix else ""
-    mode_label = "developer mode" if Config.DEV_MODE_ENABLED else "production mode"
-    Log.i(f"Starting QiBot {Constants.QI_BOT_VERSION} in {mode_label}{prefix_label}.")
-
-    bot = Bot(
+def _create_bot(server_id: int) -> QiBot:
+    return QiBot(
         allowed_mentions=AllowedMentions.none(),
         case_insensitive=True,
-        command_prefix=prefix,
-        debug_guilds=[Config.SERVER_ID],
+        debug_guilds=[server_id],
         help_command=None,
         intents=_get_required_intents(),
     )
-
-    # Load production-ready cogs, or all cogs if the bot is running in dev mode.
-    for cog in CogRegistry:
-        if cog.is_production_ready or Config.DEV_MODE_ENABLED:
-            Log.d(f'Loading extension "{cog.cog_class_name}"...')
-            bot.load_extension(cog.get_module_name())
-
-    # This cog is defined below. It finishes the setup process after the bot logs in.
-    bot.add_cog(_ReadyListener(bot, Config.SERVER_ID))
-
-    try:
-        Log.i("Attempting to log in to Discord...")
-        bot.run(Config.BOT_TOKEN)
-    except LoginFailure:
-        Log.e("Failed to log in. Make sure the BOT_TOKEN is configured properly.")
 
 
 # noinspection PyDunderSlots, PyUnresolvedReferences
@@ -52,47 +25,20 @@ def _get_required_intents() -> Intents:
     return intents
 
 
-class _ReadyListener(Cog):
-    def __init__(self, bot: Bot, server_id: int) -> None:
-        self._bot: Final[Bot] = bot
-        self._server_id: Final[int] = server_id
-
-    @Cog.listener()
-    async def on_ready(self) -> None:
-        Log.i(f'  Successfully logged in as "{self._bot.user}".')
-
-        server_name = self._get_server_name()
-        if not server_name:
-            return await self._bot.close()
-
-        Log.i(f'Monitoring server: "{server_name}"')
-
-        await Channel.initialize_all(self._bot)
-        await Characters.initialize()
-
-        await self._bot.change_presence(
-            activity=Activity(type=ActivityType.watching, name="everything.")
-        )
-        self._bot.remove_cog(self.__class__.__name__)
-
-    def _get_server_name(self) -> Optional[str]:
-        server_count = len(self._bot.guilds)
-        if server_count != 1:
-            Log.e(
-                f"This bot account is in {server_count} servers (expected: 1). Exiting."
-            )
-            return None
-
-        server = self._bot.guilds[0]
-        if server.id != self._server_id:
-            Log.e(
-                f'This bot is running in an unexpected server: "{server.name}"'
-                f"{Log.NEWLINE}Make sure the SERVER_ID is configured properly. Exiting."
-            )
-            return None
-
-        return server.name
-
-
 if __name__ == "__main__":
-    run_bot()
+    mode_label = "developer" if Config.DEV_MODE_ENABLED else "production"
+    Log.i(f"Starting QiBot {QiBot.VERSION} in {mode_label} mode.")
+
+    bot = _create_bot(Config.SERVER_ID)
+
+    # Load production-ready cogs, or all cogs if the bot is running in dev mode.
+    for cog in CogRegistry:
+        if cog.is_production_ready or Config.DEV_MODE_ENABLED:
+            Log.d(f'Loading extension "{cog.cog_class_name}"...')
+            bot.load_extension(cog.get_module_name())
+
+    try:
+        Log.i("Attempting to log in to Discord...")
+        bot.run(Config.BOT_TOKEN)
+    except LoginFailure:
+        Log.e("Failed to log in. Make sure the BOT_TOKEN is configured properly.")

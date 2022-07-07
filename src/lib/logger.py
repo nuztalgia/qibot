@@ -22,8 +22,8 @@ class Log:
 
 
 def _get_log_level() -> int | str:
-    if Config.CUSTOM_LOG_THRESHOLD:
-        return Config.CUSTOM_LOG_THRESHOLD.upper()
+    if Config.LOG_THRESHOLD:
+        return Config.LOG_THRESHOLD.upper()
     elif Config.DEV_MODE_ENABLED:
         return logging.DEBUG
     else:
