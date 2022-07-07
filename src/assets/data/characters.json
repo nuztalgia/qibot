@@ -2,7 +2,7 @@
   "GREETER": {
     "name": "Sandy",
     "color": "FF5565",
-    "avatar_url": "https://raw.githubusercontent.com/nuztalgia/qi-bot/main/assets/images/sandy.png",
+    "avatar_url": "https://raw.githubusercontent.com/nuztalgia/qibot/main/src/assets/images/sandy.png",
     "responses": {
       "MEMBER_JOINED": {
         "emoji": ["😊", "🥰", "😜", "🤩"],
@@ -26,7 +26,7 @@
   "REPORTER": {
     "name": "Bouncer",
     "color": "141414",
-    "avatar_url": "https://raw.githubusercontent.com/nuztalgia/qi-bot/main/assets/images/bouncer.png",
+    "avatar_url": "https://raw.githubusercontent.com/nuztalgia/qibot/main/src/assets/images/bouncer.png",
     "responses": {
       "MEMBER_JOINED": {
         "emoji": "🌈",
