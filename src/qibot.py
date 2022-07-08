@@ -5,12 +5,8 @@ from discord import Activity, ActivityType, ApplicationContext, Bot, Cog, slash_
 from discord.utils import utcnow
 
 from lib.channels import Channel
-from lib.characters import Characters
-from lib.common import Utils
-from lib.embeds import FieldData
+from lib.characters import Overseer
 from lib.logger import Log
-
-_GITHUB_LINK: Final[str] = "[Available on GitHub!](https://github.com/nuztalgia/qibot)"
 
 
 class QiBot(Bot):
@@ -32,7 +28,6 @@ class QiBot(Bot):
         type(self).START_TIME = utcnow()
 
         await Channel.initialize_all(self)
-        await Characters.initialize()
 
         await self.change_presence(
             activity=Activity(type=ActivityType.watching, name="everything.")
@@ -58,20 +53,10 @@ class QiBot(Bot):
 class _MetaCommands(Cog):
     @slash_command(description="Shows metadata about this bot.")
     async def about(self, ctx: ApplicationContext) -> None:
-        if not await Channel.BOT_SPAM.is_context(ctx):
-            return None
-        start_time = Utils.format_time(QiBot.START_TIME, show_timestamp=False)
-        fields = [
-            FieldData("🏷️", "Bot Tag", Utils.get_member_nametag(ctx.bot.user), True),
-            FieldData("🧭", "Home Server", ctx.guild.name, True),
-            FieldData("⌛", "Last Restarted", start_time, True),
-            FieldData("🤖", "Bot Version", QiBot.VERSION, True),
-            FieldData("🤓", "Developer", "<@318178318488698891>", True),
-            FieldData("💻", "Source Code", _GITHUB_LINK, True),
-        ]
-        await Characters.show_bot_metadata(ctx, fields)
+        if await Channel.BOT_SPAM.is_context(ctx):
+            await Overseer.show_bot_metadata(ctx, QiBot.VERSION, QiBot.START_TIME)
 
     @slash_command(description="Shows a motivational quote. (Under construction!)")
     async def help(self, ctx: ApplicationContext) -> None:
         # TODO: Properly implement this when there's actual information to show.
-        await Characters.show_bot_help(ctx)
+        await Overseer.show_bot_help(ctx)
