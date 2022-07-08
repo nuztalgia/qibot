@@ -1,4 +1,26 @@
 {
+  "OVERSEER": {
+    "responses": {
+      "BOT_HELP": {
+        "emoji": "💫",
+        "dialogue": [
+          "Keep it up, kid. I think you're gonna be a star.",
+          "Set your eyes on the furthest star, and let that be your goal.",
+          "Settle for nothing less than excellence in everything you do.",
+          "There's more to this world than meets the eye, kid."
+        ]
+      },
+      "BOT_METADATA": {
+        "emoji": "🧞",
+        "dialogue": [
+          "I got to where I am through the force of pure willpower, kid.",
+          "I'm always behind the curtain, making sure the show is interesting.",
+          "Keep working hard and maybe you'll end up like me someday.",
+          "Never stop striving to achieve perfection."
+        ]
+      }
+    }
+  },
   "GREETER": {
     "name": "Sandy",
     "color": "FF5565",

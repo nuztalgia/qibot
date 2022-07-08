@@ -4,7 +4,7 @@ from enum import Enum, auto, unique
 from random import choice as choose_random
 from typing import Any, ClassVar, Final, Iterable, TypeAlias
 
-from discord import File, Member
+from discord import ApplicationContext, File, Member
 
 from lib.channels import Channel
 from lib.common import Template, Utils
@@ -16,6 +16,7 @@ _ActionDict: TypeAlias = dict[str, dict[str, str | list[str]]]
 
 
 class Characters:
+    _OVERSEER: ClassVar[_Overseer]
     _GREETER: ClassVar[_Greeter]
     _REPORTER: ClassVar[_Reporter]
 
@@ -23,8 +24,19 @@ class Characters:
     async def initialize(cls) -> None:
         Log.d("Loading character data...")
         _Character.DATA = Utils.load_json_from_file(filename="characters")
+        cls._OVERSEER = _Overseer()
         cls._GREETER = _Greeter()
         cls._REPORTER = _Reporter()
+
+    @classmethod
+    async def show_bot_help(cls, ctx: ApplicationContext) -> None:
+        await cls._OVERSEER.send_message(_Action.BOT_HELP, ctx)
+
+    @classmethod
+    async def show_bot_metadata(
+        cls, ctx: ApplicationContext, fields: list[FieldData]
+    ) -> None:
+        await cls._OVERSEER.send_message(_Action.BOT_METADATA, ctx, fields)
 
     @classmethod
     async def greet(cls, member: Member) -> None:
@@ -57,6 +69,8 @@ class Characters:
 
 @unique
 class _Action(Enum):
+    BOT_HELP = auto()
+    BOT_METADATA = auto()
     MEMBER_JOINED = auto()
     MEMBER_LEFT = auto()
     MEMBER_RENAMED = auto()
@@ -89,12 +103,13 @@ class _Character:
         Log.d(f'  Initializing character for role "{role}".')
         data = type(self).DATA[role.lower()]
 
-        self._name: Final[str] = data["name"]
-        self._color: Final[int] = int(data["color"], base=16)
-        self._avatar_url: Final[str] = data["avatar_url"]
+        self._name: Final[str] = data.get("name")
+        self._color: Final[int] = int(data.get("color", "0"), base=16)
+        self._avatar_url: Final[str] = data.get("avatar_url")
         self._responses: Final[_ActionDict] = _Action.sanitize(data["responses"])
 
-        Log.d(f'    Name: "{self._name}"')
+        if self._name:
+            Log.d(f'    Name: "{self._name}"')
         Log.d(f"    Supported actions: [{', '.join(self._responses)}]")
 
     def _get_response(self, action: _Action, category: str) -> str:
@@ -120,20 +135,36 @@ class _Character:
     async def _send_message(
         self,
         action: _Action,
-        channel: Channel,
-        text: str,
+        destination: ApplicationContext | Channel,
+        text: str = "",
         thumbnail: str | File | None = None,
         fields: Iterable[FieldData] | None = None,
     ) -> None:
-        emoji = self._get_response(action, "emoji")
-        thumbnail = thumbnail or self._get_response(action, "thumbnail")
-        embed_data = EmbedData.create(self._color, text, emoji, thumbnail, fields)
-        await (await channel.get_webhook()).send(
-            username=self._name,
-            avatar_url=self._avatar_url,
-            embed=embed_data.build_embed(),
-            files=embed_data.get_files(),
+        embed_data = EmbedData.create(
+            color=self._color,
+            text=text or self._get_dialogue(action),
+            emoji=self._get_response(action, "emoji"),
+            thumbnail=thumbnail or self._get_response(action, "thumbnail"),
+            fields=fields,
         )
+        embed = embed_data.build_embed()
+        files = embed_data.get_files()
+        if isinstance(destination, ApplicationContext):
+            await destination.respond(embed=embed)
+        else:
+            await (await destination.get_webhook()).send(
+                username=self._name,
+                avatar_url=self._avatar_url,
+                embed=embed,
+                files=files,
+            )
+
+
+class _Overseer(_Character):
+    async def send_message(
+        self, action: _Action, ctx: ApplicationContext, fields: list[FieldData] = None
+    ) -> None:
+        await self._send_message(action=action, destination=ctx, fields=fields)
 
 
 class _Greeter(_Character):
@@ -142,7 +173,7 @@ class _Greeter(_Character):
         rules_text = self._get_dialogue(_Action.MENTION_RULES, url=Channel.RULES.url)
         await self._send_message(
             action=_Action.MEMBER_JOINED,
-            channel=Channel.WELCOME,
+            destination=Channel.WELCOME,
             text=f"{welcome_text}\n\n{rules_text}",
         )
 
@@ -153,7 +184,7 @@ class _Reporter(_Character):
     ) -> None:
         await self._send_message(
             action=action,
-            channel=Channel.LOGGING,
+            destination=Channel.LOGGING,
             text=f"**{self._get_dialogue(action, name=member.mention)}**",
             thumbnail=await ImageUtils.get_member_avatar(member),
             fields=[
