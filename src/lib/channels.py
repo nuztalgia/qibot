@@ -1,12 +1,14 @@
 from enum import Enum, auto
 from typing import Final
 
-from discord import Bot, TextChannel, Webhook
+from discord import ApplicationContext, Bot, TextChannel, Webhook
 
-from lib.common import Config
+from lib.common import Config, Template
 from lib.logger import Log
 
 _BOT_WEBHOOK_NAME: Final[str] = "QiBot Webhook"
+
+_CTX_MISMATCH: Final[Template] = Template("That command is only available in <#$id>.")
 
 _CHANNEL_CACHE: Final[dict[str, TextChannel]] = {}
 _WEBHOOK_CACHE: Final[dict[str, Webhook]] = {}
@@ -26,13 +28,21 @@ class Channel(Enum):
                 raise ValueError(f'Invalid "{name}" channel. (Specified ID: "{uid}")')
             _CHANNEL_CACHE[name] = channel
 
-    LOGGING = auto()
+    ADMIN_LOG = auto()
+    BOT_SPAM = auto()
     RULES = auto()
     WELCOME = auto()
 
     @property
     def url(self) -> str:
         return self._get_from_cache().jump_url
+
+    async def is_context(self, ctx: ApplicationContext, respond: bool = True) -> bool:
+        if ctx.channel_id == self.value:
+            return True
+        elif respond:
+            await ctx.respond(_CTX_MISMATCH.sub(id=self.value), ephemeral=True)
+        return False
 
     async def get_webhook(self) -> Webhook:
         if self.name not in _WEBHOOK_CACHE:

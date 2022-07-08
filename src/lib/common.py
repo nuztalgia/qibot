@@ -1,11 +1,12 @@
 import json
 import re
 import string
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any, Callable, Final, Optional
 
 from aiohttp import ClientSession
-from discord import Member
+from discord import ClientUser, Member
+from discord.utils import utcnow
 from humanize import naturaltime
 
 
@@ -19,17 +20,24 @@ class Utils:
 
     _JSON_FILE_PATH: Final[Template] = Template("${path}/${name}.json")
     _MEMBER_NAMETAG: Final[Template] = Template("${name}#${tag}")
-    _TIME_FORMAT: Final[Template] = Template("<t:${timestamp}> (${elapsed})")
+    _TIME_STAMP_FORMAT: Final[Template] = Template("<t:${timestamp}>")
 
     _TEMPLATE_KEY_PATTERN: Final[re.Pattern] = re.compile(r"\${?(\w*)", re.ASCII)
 
     @classmethod
-    def format_time(cls, time: datetime) -> str:
-        elapsed = naturaltime(datetime.now(timezone.utc) - time)
-        return cls._TIME_FORMAT.sub(timestamp=int(time.timestamp()), elapsed=elapsed)
+    def format_time(
+        cls, time: datetime, show_timestamp: bool = True, show_elapsed: bool = True
+    ) -> str:
+        results = []
+        if show_timestamp:
+            results.append(cls._TIME_STAMP_FORMAT.sub(timestamp=int(time.timestamp())))
+        if show_elapsed:
+            elapsed_time = naturaltime(utcnow() - time)
+            results.append(f"({elapsed_time})" if results else elapsed_time)
+        return " ".join(results)
 
     @classmethod
-    def get_member_nametag(cls, member: Member) -> str:
+    def get_member_nametag(cls, member: Member | ClientUser) -> str:
         return cls._MEMBER_NAMETAG.sub(name=member.name, tag=member.discriminator)
 
     @classmethod

@@ -184,7 +184,7 @@ class _Reporter(_Character):
     ) -> None:
         await self._send_message(
             action=action,
-            destination=Channel.LOGGING,
+            destination=Channel.ADMIN_LOG,
             text=f"**{self._get_dialogue(action, name=member.mention)}**",
             thumbnail=await ImageUtils.get_member_avatar(member),
             fields=[
