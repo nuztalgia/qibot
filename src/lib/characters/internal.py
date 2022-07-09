@@ -1,12 +1,12 @@
 from enum import Enum, auto, unique
 from random import choice as choose_random
-from typing import Any, Final, Iterable, TypeAlias
+from typing import Any, Final, TypeAlias
 
 from discord import ApplicationContext, File
 
 from lib.channels import Channel
 from lib.common import Template, Utils
-from lib.embeds import EmbedData, FieldData
+from lib.embeds import Fields, create_embed_with_files
 from lib.logger import Log
 
 ActionDict: TypeAlias = dict[str, dict[str, str | list[str]]]
@@ -78,18 +78,15 @@ class Character:
         destination: ApplicationContext | Channel,
         text: str = "",
         thumbnail: str | File | None = None,
-        fields: Iterable[FieldData] | None = None,
+        fields: Fields | None = None,
     ) -> None:
-        embed_data = EmbedData.create(
+        embed, files = create_embed_with_files(
             color=self._color,
             text=text or self._get_dialogue(action),
             emoji=self._get_response(action, "emoji"),
             thumbnail=thumbnail or self._get_response(action, "thumbnail"),
             fields=fields,
         )
-        embed = embed_data.build_embed()
-        files = embed_data.get_files()
-
         if isinstance(destination, ApplicationContext):
             await destination.respond(embed=embed)
         else:

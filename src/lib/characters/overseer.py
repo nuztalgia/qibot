@@ -5,7 +5,7 @@ from discord import ApplicationContext
 
 from lib.characters.internal import Action, Character
 from lib.common import Utils
-from lib.embeds import FieldData
+from lib.embeds import create_inline_fields
 
 _DEVELOPER_DISCORD_TAG: Final[str] = "<@318178318488698891>"
 _GITHUB_LINK: Final[str] = "[Available on GitHub!](https://github.com/nuztalgia/qibot)"
@@ -19,17 +19,16 @@ class Overseer(Character):
     async def show_bot_metadata(
         self, ctx: ApplicationContext, bot_version: str, bot_start_time: datetime
     ) -> None:
-        formatted_bot_tag = Utils.get_member_nametag(ctx.bot.user)
         formatted_start_time = Utils.format_time(bot_start_time, show_timestamp=False)
         await self._send_message(
             action=Action.BOT_METADATA,
             destination=ctx,
-            fields=[
-                FieldData("🏷️", "Bot Tag", formatted_bot_tag, True),
-                FieldData("🧭", "Home Server", ctx.guild.name, True),
-                FieldData("⌛", "Last Restarted", formatted_start_time, True),
-                FieldData("🤖", "Bot Version", bot_version, True),
-                FieldData("🤓", "Developer", _DEVELOPER_DISCORD_TAG, True),
-                FieldData("💻", "Source Code", _GITHUB_LINK, True),
-            ],
+            fields=create_inline_fields(
+                ("🏷️", "Bot Tag", Utils.get_member_nametag(ctx.bot.user)),
+                ("🧭", "Home Server", ctx.guild.name),
+                ("⌛", "Last Restarted", formatted_start_time),
+                ("🤖", "Bot Version", bot_version),
+                ("🤓", "Developer", _DEVELOPER_DISCORD_TAG),
+                ("💻", "Source Code", _GITHUB_LINK),
+            ),
         )
