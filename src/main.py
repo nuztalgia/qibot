@@ -1,8 +1,7 @@
 from discord import AllowedMentions, Intents, LoginFailure
 
-from lib.logger import Log
 from lib.registry import CogRegistry
-from lib.utils import Config
+from lib.utils import Config, Log
 from qibot import QiBot
 
 

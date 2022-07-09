@@ -4,9 +4,8 @@ from typing import ClassVar, Final, Optional
 from discord import Activity, ActivityType, ApplicationContext, Bot, Cog, slash_command
 from discord.utils import utcnow
 
-from lib.channels import Channel
 from lib.characters import Overseer
-from lib.logger import Log
+from lib.utils import Channel, Log
 
 
 class QiBot(Bot):

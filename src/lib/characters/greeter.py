@@ -1,7 +1,7 @@
 from discord import Member
 
-from lib.channels import Channel
 from lib.characters.internal import Action, Character
+from lib.utils import Channel
 
 
 class Greeter(Character):

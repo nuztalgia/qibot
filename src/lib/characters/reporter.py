@@ -1,10 +1,8 @@
 from discord import Member
 
-from lib.channels import Channel
 from lib.characters.internal import Action, Character
 from lib.embeds import Fields, create_inline_fields, create_standalone_fields
-from lib.images import ImageUtils
-from lib.utils import format_time, get_member_nametag
+from lib.utils import Channel, format_time, get_member_avatar_file, get_member_nametag
 
 
 def _get_core_member_fields(member: Member) -> Fields:
@@ -42,6 +40,6 @@ class Reporter(Character):
             action=action,
             destination=Channel.ADMIN_LOG,
             text=f"**{self._get_dialogue(action, name=member.mention)}**",
-            thumbnail=await ImageUtils.get_member_avatar(member),
+            thumbnail=await get_member_avatar_file(member),
             fields=fields,
         )

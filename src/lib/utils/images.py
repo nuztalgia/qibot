@@ -10,7 +10,8 @@ from PIL.Image import new as new_image
 from PIL.Image import open as open_image
 from PIL.ImageDraw import Draw
 
-from lib.utils import Template, load_content_from_url
+from lib.utils.misc import load_content_from_url
+from lib.utils.templates import Template
 
 _ImageSource: TypeAlias = str | Asset
 
@@ -26,18 +27,16 @@ _FILENAME_TEMPLATE: Final[Template] = Template(f"$name.{_IMAGE_FORMAT}")
 _FILENAME_DEFAULT: Final[str] = _FILENAME_TEMPLATE.sub(name="image")
 
 
-class ImageUtils:
-    @staticmethod
-    async def get_member_avatar(
-        member: Member, size: int = _AVATAR_SIZE_DEFAULT, circle_crop: bool = True
-    ) -> File:
-        image_wrapper = await _ImageWrapper.create_from(
-            # Note: "with_size" must be called with an integer that is a power of 2.
-            member.display_avatar.with_size(_AVATAR_SIZE_MAX).with_format(_IMAGE_FORMAT)
-        )
-        if circle_crop:
-            image_wrapper.circle_crop()
-        return image_wrapper.resize(size).write_to_file(name="avatar")
+async def get_member_avatar_file(
+    member: Member, size: int = _AVATAR_SIZE_DEFAULT, circle_crop: bool = True
+) -> File:
+    image_wrapper = await _ImageWrapper.create_from(
+        # Note: "with_size" must be called with an integer that is a power of 2.
+        member.display_avatar.with_size(_AVATAR_SIZE_MAX).with_format(_IMAGE_FORMAT)
+    )
+    if circle_crop:
+        image_wrapper.circle_crop()
+    return image_wrapper.resize(size).write_to_file(name="avatar")
 
 
 class _ImageWrapper:

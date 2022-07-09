@@ -3,8 +3,9 @@ from typing import Final
 
 from discord import ApplicationContext, Bot, TextChannel, Webhook
 
-from lib.logger import Log
-from lib.utils import Template, get_channel_id
+from lib.utils.config import get_channel_id
+from lib.utils.logger import Log
+from lib.utils.templates import Template
 
 _BOT_WEBHOOK_NAME: Final[str] = "QiBot Webhook"
 

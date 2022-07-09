@@ -7,7 +7,7 @@ from lib.embeds.fielddata import FieldData
 from lib.embeds.fields import FieldsMixin
 from lib.embeds.images import ThumbnailMixin
 from lib.embeds.text import TextMixin
-from lib.logger import Log
+from lib.utils import Log
 
 
 def create_embed(

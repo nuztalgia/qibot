@@ -3,8 +3,7 @@ from asyncio import sleep
 from discord import Bot, Cog, Member
 
 from lib.characters import Greeter, Reporter
-from lib.logger import Log
-from lib.utils import get_member_nametag
+from lib.utils import Log, get_member_nametag
 
 
 class MemberEvents(Cog):

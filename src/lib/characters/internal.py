@@ -4,10 +4,8 @@ from typing import Any, Final, TypeAlias
 
 from discord import ApplicationContext, File
 
-from lib.channels import Channel
 from lib.embeds import Fields, create_embed_with_files
-from lib.logger import Log
-from lib.utils import Template, get_template_keys, load_json_from_file
+from lib.utils import Channel, Log, Template, get_template_keys, load_json_from_file
 
 ActionDict: TypeAlias = dict[str, dict[str, str | list[str]]]
 
