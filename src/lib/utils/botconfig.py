@@ -1,9 +1,9 @@
 from enum import Enum, auto
-from typing import Final
+from typing import Any, Final
 
 from discord import ApplicationContext, Bot, TextChannel, Webhook
 
-from lib.utils.config import get_channel_id
+from lib.utils.json import load_json_from_file
 from lib.utils.logger import Log
 from lib.utils.templates import Template
 
@@ -14,11 +14,16 @@ _CTX_MISMATCH: Final[Template] = Template("That command is only available in <#$
 _CHANNEL_CACHE: Final[dict[str, TextChannel]] = {}
 _WEBHOOK_CACHE: Final[dict[str, Webhook]] = {}
 
+_CONFIG: Final[dict[str, Any]] = load_json_from_file(filename="config", path=".")
+
+BOT_TOKEN: Final[str] = _CONFIG["bot_token"]
+SERVER_ID: Final[int] = _CONFIG["server_id"]
+
 
 class Channel(Enum):
     @staticmethod
     def _generate_next_value_(name: str, start: int, count: int, values: list) -> int:
-        return get_channel_id(name)
+        return _CONFIG["channel_ids"].get(name.lower(), 0)
 
     @classmethod
     async def initialize_all(cls, bot: Bot) -> None:

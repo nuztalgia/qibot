@@ -1,7 +1,6 @@
 from discord import AllowedMentions, Intents, LoginFailure
 
-from lib.registry import CogRegistry
-from lib.utils import Config, Log
+from lib.utils import BOT_TOKEN, SERVER_ID, Log
 from qibot import QiBot
 
 
@@ -25,19 +24,11 @@ def _get_required_intents() -> Intents:
 
 
 if __name__ == "__main__":
-    mode_label = "developer" if Config.DEV_MODE_ENABLED else "production"
-    Log.i(f"Starting QiBot {QiBot.VERSION} in {mode_label} mode.")
-
-    bot = _create_bot(Config.SERVER_ID)
-
-    # Load production-ready cogs, or all cogs if the bot is running in dev mode.
-    for cog in CogRegistry:
-        if cog.is_production_ready or Config.DEV_MODE_ENABLED:
-            Log.d(f'Loading extension "{cog.cog_class_name}"...')
-            bot.load_extension(cog.get_module_name())
+    Log.i(f"Starting QiBot {QiBot.VERSION}.")
+    bot = _create_bot(SERVER_ID)
 
     try:
         Log.i("Attempting to log in to Discord...")
-        bot.run(Config.BOT_TOKEN)
+        bot.run(BOT_TOKEN)
     except LoginFailure:
         Log.e("Failed to log in. Make sure the BOT_TOKEN is configured properly.")

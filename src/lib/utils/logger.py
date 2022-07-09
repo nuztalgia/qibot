@@ -2,8 +2,6 @@ import logging
 import sys
 from typing import Callable, Final, TypeAlias
 
-from lib.utils.config import Config
-
 _LogMethod: TypeAlias = Callable[[str], None]
 
 _ROOT_LOGGER: Final[logging.Logger] = logging.getLogger()
@@ -21,18 +19,9 @@ class Log:
     e: Final[_LogMethod] = _ROOT_LOGGER.error
 
 
-def _get_log_level() -> int | str:
-    if Config.LOG_THRESHOLD:
-        return Config.LOG_THRESHOLD.upper()
-    elif Config.DEV_MODE_ENABLED:
-        return logging.DEBUG
-    else:
-        return logging.INFO
-
-
 def _initialize() -> None:
     logging.basicConfig(
-        level=_get_log_level(),
+        level=logging.DEBUG,
         style="{",
         format="{asctime} | {levelname[0]} | {message}",
         datefmt="%Y-%m-%d %H:%M:%S",

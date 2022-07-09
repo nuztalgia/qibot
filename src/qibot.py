@@ -15,6 +15,8 @@ class QiBot(Bot):
     def __init__(self, *args, **options) -> None:
         super().__init__(*args, **options)
         self.add_cog(_MetaCommands(self))
+        # TODO: Redesign loading mechanism when there are more extensions to deal with.
+        self.load_extension("cogs.member_events")
 
     async def on_ready(self) -> None:
         Log.i(f'  Successfully logged in as "{self.user}".')
