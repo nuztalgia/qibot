@@ -5,9 +5,9 @@ from typing import Any, Final, TypeAlias
 from discord import ApplicationContext, File
 
 from lib.embeds import Fields, create_embed_with_files
-from lib.utils import Channel, Log, Template, get_template_keys, load_json_from_file
+from lib.utils import BotChannel, Log, Template, get_template_keys, load_json_from_file
 
-ActionDict: TypeAlias = dict[str, dict[str, str | list[str]]]
+_ActionDict: TypeAlias = dict[str, dict[str, str | list[str]]]
 
 
 @unique
@@ -24,7 +24,7 @@ class Action(Enum):
         return self.name.lower()
 
     @classmethod
-    def sanitize(cls, action_dict: ActionDict) -> ActionDict:
+    def sanitize(cls, action_dict: _ActionDict) -> _ActionDict:
         sanitized_dict = {}
         for key in list(action_dict):
             if any(action for action in cls if key == action.key):
@@ -45,7 +45,7 @@ class Character:
         self._name: Final[str] = data.get("name")
         self._color: Final[int] = int(data.get("color", "0"), base=16)
         self._avatar_url: Final[str] = data.get("avatar_url")
-        self._responses: Final[ActionDict] = Action.sanitize(data["responses"])
+        self._responses: Final[_ActionDict] = Action.sanitize(data["responses"])
 
         if self._name:
             Log.d(f'  Name: "{self._name}"')
@@ -73,7 +73,7 @@ class Character:
     async def _send_message(
         self,
         action: Action,
-        destination: ApplicationContext | Channel,
+        destination: ApplicationContext | BotChannel,
         text: str = "",
         thumbnail: str | File | None = None,
         fields: Fields | None = None,

@@ -4,7 +4,7 @@ from typing import Any, Final
 from discord import ApplicationContext, Bot, TextChannel, Webhook
 
 from lib.utils.json import load_json_from_file
-from lib.utils.logger import Log
+from lib.utils.logging import Log
 from lib.utils.templates import Template
 
 _BOT_WEBHOOK_NAME: Final[str] = "QiBot Webhook"
@@ -20,7 +20,7 @@ BOT_TOKEN: Final[str] = _CONFIG["bot_token"]
 SERVER_ID: Final[int] = _CONFIG["server_id"]
 
 
-class Channel(Enum):
+class BotChannel(Enum):
     @staticmethod
     def _generate_next_value_(name: str, start: int, count: int, values: list) -> int:
         return _CONFIG["channel_ids"].get(name.lower(), 0)

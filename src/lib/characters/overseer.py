@@ -3,7 +3,7 @@ from typing import Final
 
 from discord import ApplicationContext
 
-from lib.characters.internal import Action, Character
+from lib.characters.core import Action, Character
 from lib.embeds import create_inline_fields
 from lib.utils import format_time, get_member_nametag
 

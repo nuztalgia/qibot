@@ -1,8 +1,13 @@
 from discord import Member
 
-from lib.characters.internal import Action, Character
+from lib.characters.core import Action, Character
 from lib.embeds import Fields, create_inline_fields, create_standalone_fields
-from lib.utils import Channel, format_time, get_member_avatar_file, get_member_nametag
+from lib.utils import (
+    BotChannel,
+    format_time,
+    get_member_avatar_file,
+    get_member_nametag,
+)
 
 
 def _get_core_member_fields(member: Member) -> Fields:
@@ -38,7 +43,7 @@ class Reporter(Character):
     ) -> None:
         await self._send_message(
             action=action,
-            destination=Channel.ADMIN_LOG,
+            destination=BotChannel.ADMIN_LOG,
             text=f"**{self._get_dialogue(action, name=member.mention)}**",
             thumbnail=await get_member_avatar_file(member),
             fields=fields,

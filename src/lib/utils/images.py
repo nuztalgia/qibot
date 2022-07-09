@@ -30,7 +30,7 @@ _FILENAME_DEFAULT: Final[str] = _FILENAME_TEMPLATE.sub(name="image")
 async def get_member_avatar_file(
     member: Member, size: int = _AVATAR_SIZE_DEFAULT, circle_crop: bool = True
 ) -> File:
-    image_wrapper = await _ImageWrapper.create_from(
+    image_wrapper = await ImageWrapper.create_from(
         # Note: "with_size" must be called with an integer that is a power of 2.
         member.display_avatar.with_size(_AVATAR_SIZE_MAX).with_format(_IMAGE_FORMAT)
     )
@@ -39,7 +39,7 @@ async def get_member_avatar_file(
     return image_wrapper.resize(size).write_to_file(name="avatar")
 
 
-class _ImageWrapper:
+class ImageWrapper:
     def __init__(self, image: Image) -> None:
         self._image = image
 
@@ -57,7 +57,7 @@ class _ImageWrapper:
             )
 
     @classmethod
-    async def create_from(cls, source: Image | _ImageSource) -> _ImageWrapper:
+    async def create_from(cls, source: Image | _ImageSource) -> ImageWrapper:
         if isinstance(source, Image):
             # Edits will be applied to a copy, in case the original is used elsewhere.
             image = source.copy()
@@ -73,14 +73,14 @@ class _ImageWrapper:
             image_bytes.seek(0)
             return File(fp=image_bytes, filename=filename)
 
-    def circle_crop(self) -> _ImageWrapper:
+    def circle_crop(self) -> ImageWrapper:
         mask = new_image(mode="1", size=self._image.size, color=_COLOR_BLACK)
         circle_size = (self._image.width - 2, self._image.height - 2)
         Draw(mask).ellipse(xy=(0, 0, *circle_size), fill=_COLOR_WHITE)
         self._image.putalpha(mask)
         return self
 
-    def resize(self, size: int | tuple[int, int]) -> _ImageWrapper:
+    def resize(self, size: int | tuple[int, int]) -> ImageWrapper:
         if isinstance(size, int):
             size = (size, size)
         self._image = self._image.resize(size)

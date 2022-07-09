@@ -5,7 +5,7 @@ from discord import Activity, ActivityType, ApplicationContext, Bot, Cog, slash_
 from discord.utils import utcnow
 
 from lib.characters import Overseer
-from lib.utils import Channel, Log
+from lib.utils import BotChannel, Log
 
 
 class QiBot(Bot):
@@ -16,7 +16,7 @@ class QiBot(Bot):
         super().__init__(*args, **options)
         self.add_cog(_MetaCommands(self))
         # TODO: Redesign loading mechanism when there are more extensions to deal with.
-        self.load_extension("cogs.member_events")
+        self.load_extension("cogs.members")
 
     async def on_ready(self) -> None:
         Log.i(f'  Successfully logged in as "{self.user}".')
@@ -28,7 +28,7 @@ class QiBot(Bot):
         Log.i(f'Monitoring server: "{server_name}"')
         type(self).START_TIME = utcnow()
 
-        await Channel.initialize_all(self)
+        await BotChannel.initialize_all(self)
 
         await self.change_presence(
             activity=Activity(type=ActivityType.watching, name="everything.")
@@ -54,7 +54,7 @@ class QiBot(Bot):
 class _MetaCommands(Cog):
     @slash_command(description="Shows metadata about this bot.")
     async def about(self, ctx: ApplicationContext) -> None:
-        if await Channel.BOT_SPAM.is_context(ctx):
+        if await BotChannel.BOT_SPAM.is_context(ctx):
             await Overseer.show_bot_metadata(ctx, QiBot.VERSION, QiBot.START_TIME)
 
     @slash_command(description="Shows a motivational quote. (Under construction!)")
