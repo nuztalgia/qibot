@@ -5,9 +5,9 @@ from typing import Any, Final, TypeAlias
 from discord import ApplicationContext, File
 
 from lib.channels import Channel
-from lib.common import Template, Utils
 from lib.embeds import Fields, create_embed_with_files
 from lib.logger import Log
+from lib.utils import Template, get_template_keys, load_json_from_file
 
 ActionDict: TypeAlias = dict[str, dict[str, str | list[str]]]
 
@@ -37,7 +37,7 @@ class Action(Enum):
 
 
 class Character:
-    DATA: Final[dict[str, Any]] = Utils.load_json_from_file(filename="characters")
+    DATA: Final[dict[str, Any]] = load_json_from_file(filename="characters")
 
     def __init__(self) -> None:
         role = self.__class__.__name__.strip("_")
@@ -68,7 +68,7 @@ class Character:
         if not dialogue:
             Log.e(f'Dialogue for "{action.key}" is not defined for {self._name}.')
         available_subs = self._responses[action.key] | kwargs
-        while available_subs.keys() & Utils.get_template_keys(dialogue):
+        while available_subs.keys() & get_template_keys(dialogue):
             dialogue = Template(dialogue).safe_sub(available_subs)
         return dialogue
 

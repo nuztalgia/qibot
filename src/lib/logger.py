@@ -2,7 +2,7 @@ import logging
 import sys
 from typing import Callable, Final, TypeAlias
 
-from lib.common import Config
+from lib.utils import Config
 
 _LogMethod: TypeAlias = Callable[[str], None]
 

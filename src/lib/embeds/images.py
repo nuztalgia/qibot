@@ -3,8 +3,8 @@ from typing import Final
 
 from discord import Embed, File
 
-from lib.common import Template
 from lib.embeds.core import EmbedData
+from lib.utils import Template
 
 _ATTACHMENT_URL: Final[Template] = Template("attachment://$filename")
 

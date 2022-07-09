@@ -3,8 +3,8 @@ from typing import Final
 
 from discord import ApplicationContext, Bot, TextChannel, Webhook
 
-from lib.common import Config, Template
 from lib.logger import Log
+from lib.utils import Template, get_channel_id
 
 _BOT_WEBHOOK_NAME: Final[str] = "QiBot Webhook"
 
@@ -17,7 +17,7 @@ _WEBHOOK_CACHE: Final[dict[str, Webhook]] = {}
 class Channel(Enum):
     @staticmethod
     def _generate_next_value_(name: str, start: int, count: int, values: list) -> int:
-        return Config.get_channel_id(name)
+        return get_channel_id(name)
 
     @classmethod
     async def initialize_all(cls, bot: Bot) -> None:

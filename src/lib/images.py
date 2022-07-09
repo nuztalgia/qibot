@@ -10,7 +10,7 @@ from PIL.Image import new as new_image
 from PIL.Image import open as open_image
 from PIL.ImageDraw import Draw
 
-from lib.common import Template, Utils
+from lib.utils import Template, load_content_from_url
 
 _ImageSource: TypeAlias = str | Asset
 
@@ -49,7 +49,7 @@ class _ImageWrapper:
         if isinstance(source, str):
             if Path(source).is_file():
                 return source
-            return await Utils.load_content_from_url(source)
+            return await load_content_from_url(source)
         elif isinstance(source, Asset):
             return await source.read()
         else:

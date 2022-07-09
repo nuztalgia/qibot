@@ -1,7 +1,7 @@
 from enum import Enum, auto, unique
 from typing import Final
 
-from lib.common import Template
+from lib.utils import Template
 
 _COG_MODULE_TEMPLATE: Final[Template] = Template("cogs.$name")
 
