@@ -2,7 +2,7 @@ from typing import Final
 
 from discord import Embed, File
 
-from lib.utils import Template
+from qibot.utils import Template
 
 SPACING: Final[str] = " \u200B "
 DEFAULT_COLOR: Final[int] = 0x6C79FF

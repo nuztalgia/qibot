@@ -6,7 +6,7 @@ from discord import ClientUser, Member
 from discord.utils import utcnow
 from humanize import naturaltime
 
-from lib.utils.templates import Template
+from qibot.utils.templates import Template
 
 _CLIENT_SESSION: Final[ClientSession] = ClientSession()
 

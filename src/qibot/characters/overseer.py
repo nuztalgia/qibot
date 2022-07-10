@@ -3,9 +3,9 @@ from typing import Final
 
 from discord import ApplicationContext
 
-from lib.characters.core import Action, Character
-from lib.embeds import create_inline_fields
-from lib.utils import format_time, get_member_nametag
+from qibot.characters.core import Action, Character
+from qibot.embeds import create_inline_fields
+from qibot.utils import format_time, get_member_nametag
 
 _DEVELOPER_DISCORD_TAG: Final[str] = "<@318178318488698891>"
 _GITHUB_LINK: Final[str] = "[Available on GitHub!](https://github.com/nuztalgia/qibot)"

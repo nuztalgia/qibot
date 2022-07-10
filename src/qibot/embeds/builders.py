@@ -2,12 +2,12 @@ from typing import Final, Iterable, Type
 
 from discord import Embed, File
 
-from lib.embeds.core import EmbedData
-from lib.embeds.fielddata import FieldData
-from lib.embeds.fields import FieldsMixin
-from lib.embeds.images import ThumbnailMixin
-from lib.embeds.text import TextMixin
-from lib.utils import Log
+from qibot.embeds.core import EmbedData
+from qibot.embeds.fielddata import FieldData
+from qibot.embeds.fields import FieldsMixin
+from qibot.embeds.images import ThumbnailMixin
+from qibot.embeds.text import TextMixin
+from qibot.utils import Log
 
 
 def create_embed(

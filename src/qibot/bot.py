@@ -4,8 +4,9 @@ from typing import ClassVar, Final, Optional
 from discord import Activity, ActivityType, ApplicationContext, Bot, Cog, slash_command
 from discord.utils import utcnow
 
-from lib.characters import Overseer
-from lib.utils import BotChannel, Log
+from qibot.characters import Overseer
+from qibot.cogs import MemberListeners
+from qibot.utils import BotChannel, Log
 
 
 class QiBot(Bot):
@@ -14,9 +15,9 @@ class QiBot(Bot):
 
     def __init__(self, *args, **options) -> None:
         super().__init__(*args, **options)
+        # TODO: Redesign cog-adding mechanism when there are more cogs to deal with.
         self.add_cog(_MetaCommands(self))
-        # TODO: Redesign loading mechanism when there are more extensions to deal with.
-        self.load_extension("cogs.members")
+        self.add_cog(MemberListeners(self))
 
     async def on_ready(self) -> None:
         Log.i(f'  Successfully logged in as "{self.user}".')

@@ -2,7 +2,7 @@ from typing import Final
 
 from discord import Embed
 
-from lib.embeds.core import TEXT_WITH_EMOJI, EmbedData, assert_valid_emoji
+from qibot.embeds.core import TEXT_WITH_EMOJI, EmbedData, assert_valid_emoji
 
 
 class TextMixin(EmbedData):

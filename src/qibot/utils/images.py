@@ -10,8 +10,8 @@ from PIL.Image import new as new_image
 from PIL.Image import open as open_image
 from PIL.ImageDraw import Draw
 
-from lib.utils.misc import load_content_from_url
-from lib.utils.templates import Template
+from qibot.utils.misc import load_content_from_url
+from qibot.utils.templates import Template
 
 _ImageSource: TypeAlias = str | Asset
 

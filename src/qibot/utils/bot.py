@@ -3,9 +3,9 @@ from typing import Any, Final
 
 from discord import ApplicationContext, Bot, TextChannel, Webhook
 
-from lib.utils.json import load_json_from_file
-from lib.utils.logging import Log
-from lib.utils.templates import Template
+from qibot.utils.json import load_json_from_file
+from qibot.utils.logging import Log
+from qibot.utils.templates import Template
 
 _BOT_WEBHOOK_NAME: Final[str] = "QiBot Webhook"
 

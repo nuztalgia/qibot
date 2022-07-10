@@ -1,7 +1,7 @@
 from discord import Member
 
-from lib.characters.core import Action, Character
-from lib.utils import BotChannel
+from qibot.characters.core import Action, Character
+from qibot.utils import BotChannel
 
 
 class Greeter(Character):

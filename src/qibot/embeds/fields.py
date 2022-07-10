@@ -2,9 +2,9 @@ from typing import Final, Iterable
 
 from discord import Embed
 
-from lib.embeds.core import SPACING, TEXT_WITH_EMOJI, EmbedData, assert_valid_emoji
-from lib.embeds.fielddata import FieldData
-from lib.utils import Template
+from qibot.embeds.core import SPACING, TEXT_WITH_EMOJI, EmbedData, assert_valid_emoji
+from qibot.embeds.fielddata import FieldData
+from qibot.utils import Template
 
 _FIELD_CONTENT: Final[Template] = Template(
     f"{TEXT_WITH_EMOJI.safe_sub(emoji='▪')}{SPACING * 4}"  # Extra horizontal padding.

@@ -1,7 +1,7 @@
 from discord import AllowedMentions, Intents, LoginFailure
 
-from lib.utils import BOT_TOKEN, SERVER_ID, Log
-from qibot import QiBot
+from qibot.bot import QiBot
+from qibot.utils import BOT_TOKEN, SERVER_ID, Log
 
 
 def _create_bot(server_id: int) -> QiBot:

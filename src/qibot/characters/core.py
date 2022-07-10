@@ -4,8 +4,14 @@ from typing import Any, Final, TypeAlias
 
 from discord import ApplicationContext, File
 
-from lib.embeds import Fields, create_embed_with_files
-from lib.utils import BotChannel, Log, Template, get_template_keys, load_json_from_file
+from qibot.embeds import Fields, create_embed_with_files
+from qibot.utils import (
+    BotChannel,
+    Log,
+    Template,
+    get_template_keys,
+    load_json_from_file,
+)
 
 _ActionDict: TypeAlias = dict[str, dict[str, str | list[str]]]
 
