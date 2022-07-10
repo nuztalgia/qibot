@@ -45,12 +45,13 @@ def _assemble_embed_data(
     fields: Iterable[FieldData] | None,
 ) -> EmbedData:
     params = locals()
-    class_mixins = set()
 
     # For a mixin to be included, all of its required params must have non-falsy values.
-    for mixin, required_params in _MIXIN_MATCHER.items():
-        if all(params.get(param_name) for param_name in required_params):
-            class_mixins.add(mixin)
+    class_mixins = {
+        mixin
+        for mixin, required_params in _MIXIN_MATCHER.items()
+        if all(params.get(param_name) for param_name in required_params)
+    }
 
     mixin_label = "And".join(mixin.__name__ for mixin in class_mixins) or "NoMixins"
     cls = type(f"{EmbedData.__name__}With{mixin_label}", (*class_mixins, EmbedData), {})
