@@ -45,6 +45,8 @@ def _assemble_embed_data(
     fields: Iterable[FieldData] | None,
 ) -> EmbedData:
     params = locals()
+
+    # For a mixin to be included, all of its required params must have non-falsy values.
     class_mixins = {
         mixin
         for mixin, required_params in _MIXIN_MATCHER.items()
