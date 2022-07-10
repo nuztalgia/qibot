@@ -1,8 +1,12 @@
 *.bak
+*.egg-info/
 *.py[cdo]
 *.sw[a-p]
 .DS_Store
 .idea/
+.mypy_cache/
 .vscode/
+__pycache__/
 config.json
+dist/
 venv/

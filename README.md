@@ -1,8 +1,7 @@
 # QiBot
 
 [![Project License](https://img.shields.io/github/license/nuztalgia/qibot?color=993388)](LICENSE)
-[![Python Version](https://img.shields.io/github/pipenv/locked/python-version/nuztalgia/qibot)](Pipfile)
-[![Pycord Version](https://img.shields.io/github/pipenv/locked/dependency-version/nuztalgia/qibot/py-cord?label=pycord)](https://github.com/Pycord-Development/pycord)
+[![Python Version](https://img.shields.io/badge/python-3.10-blue)](https://www.python.org/downloads/release/python-3100/)
 [![Libraries.io Deps](https://img.shields.io/librariesio/github/nuztalgia/qibot)](https://libraries.io/github/nuztalgia/qibot)
 [![LGTM Code Quality](https://img.shields.io/lgtm/grade/python/github/nuztalgia/qibot?label=code%20quality)](https://lgtm.com/projects/g/nuztalgia/qibot/context:python)
 [![LGTM Lines of Code](https://badgen.net/lgtm/lines/g/nuztalgia/qibot/python?label=lines%20of%20code&color=33aadd)](https://lgtm.com/projects/g/nuztalgia/qibot/latest/files/src/)
