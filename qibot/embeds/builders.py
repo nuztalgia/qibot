@@ -51,7 +51,6 @@ def _assemble_embed_data(
         if all(params.get(param_name) for param_name in required_params)
     }
 
-
     mixin_label = "And".join(mixin.__name__ for mixin in class_mixins) or "NoMixins"
     cls = type(f"{EmbedData.__name__}With{mixin_label}", (*class_mixins, EmbedData), {})
 
