@@ -1,8 +1,8 @@
-from pathlib import Path
 from typing import Final
 
 from discord import Embed, File
 
+from qibot.assets import IMAGE_PATH
 from qibot.embeds.core import EmbedData
 from qibot.utils import Template
 
@@ -18,8 +18,10 @@ class ThumbnailMixin(EmbedData):
     def _validate(self) -> None:
         # Convert the thumbnail string into a File if it exists and is valid.
         # Otherwise, assume it's a URL and leave it for Discord to deal with.
-        if isinstance(self._thumbnail, str) and Path(self._thumbnail).is_file():
-            self._thumbnail = File(fp=self._thumbnail)
+        if isinstance(self._thumbnail, str):
+            file_path = IMAGE_PATH / self._thumbnail
+            if file_path.is_file():
+                self._thumbnail = File(fp=file_path)
 
         # Wrangle the File into the expected fields & format required by Discord.
         if isinstance(self._thumbnail, File):

@@ -10,7 +10,7 @@ from qibot.utils import (
     Log,
     Template,
     get_template_keys,
-    load_json_from_file,
+    load_dict_from_file,
 )
 
 _ActionDict: TypeAlias = dict[str, dict[str, str | list[str]]]
@@ -41,7 +41,7 @@ class Action(Enum):
 
 
 class Character:
-    DATA: Final[dict[str, Any]] = load_json_from_file(filename="characters")
+    DATA: Final[dict[str, Any]] = load_dict_from_file(filename="characters")
 
     def __init__(self) -> None:
         role = self.__class__.__name__.strip("_")

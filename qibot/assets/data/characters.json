@@ -34,7 +34,7 @@
           "Welcome to the Oasis, $name! The air conditioning in here sure feels nice, doesn't it?",
           "Hi there, $name! I was starting to think you'd never show up. Stay as long as you like!"
         ],
-        "thumbnail": "assets/images/sandy_wave.gif"
+        "thumbnail": "sandy_wave.gif"
       },
       "MENTION_RULES": {
         "dialogue": [

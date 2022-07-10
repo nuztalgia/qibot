@@ -1,16 +1,15 @@
 import json
 from typing import Any, Final
 
+from qibot.assets import DATA_PATH
 from qibot.utils.templates import Template
 
-_JSON_FILE_PATH: Final[Template] = Template("${path}/${name}.json")
+_JSON_FILE: Final[Template] = Template("${filename}.json")
 
 
-def load_json_from_file(
-    filename: str, path: str = "assets/data/", lowercase_keys: bool = True
-) -> dict[str, Any]:
-    full_path = _JSON_FILE_PATH.sub(path=path, name=filename)
-    with open(full_path, mode="r", encoding="utf-8") as file:
+def load_dict_from_file(filename: str, lowercase_keys: bool = True) -> dict[str, Any]:
+    file_path = DATA_PATH / _JSON_FILE.sub(filename=filename)
+    with file_path.open(mode="r", encoding="utf-8") as file:
         result = json.load(file)
     return _lowercase_keys(result) if lowercase_keys else result
 
