@@ -1,6 +1,11 @@
 from setuptools import setup
 
 setup(
+    url="https://github.com/nuztalgia/qibot",
+    project_urls={
+        "Issue Tracker": "https://github.com/nuztalgia/qibot/issues",
+        "Source Code": "https://github.com/nuztalgia/qibot",
+    },
     install_requires=[
         "aiohttp >=3.8.0",
         "humanize >=4.2.3",

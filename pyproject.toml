@@ -6,8 +6,12 @@ build-backend = "setuptools.build_meta"
 name = "qibot"
 description = "A Discord bot with a Stardew Valley theme."
 requires-python = ">=3.10"
+authors = [
+    { name = "Nuztalgia" },
+    { email = "nuztalgia@gmail.com" }
+]
 readme = "README.md"
-license = { file = "LICENSE" }
+license = { text = "Apache-2.0" }
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "License :: OSI Approved :: Apache Software License",
@@ -15,15 +19,15 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Communications :: Chat",
+    "Topic :: Games/Entertainment :: Role-Playing",
+    "Topic :: Games/Entertainment :: Simulation",
 ]
-dynamic = ["dependencies", "optional-dependencies", "version"]
+dynamic = ["dependencies", "optional-dependencies", "urls", "version"]
 
 [project.scripts]
 qibot = "qibot.bot:main"
-
-[project.urls]
-"Homepage" = "https://github.com/nuztalgia/qibot"
-"Issue Tracker" = "https://github.com/nuztalgia/qibot/issues"
 
 [tool.black]
 target-version = ["py310"]
