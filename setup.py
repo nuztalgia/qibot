@@ -11,7 +11,7 @@ setup(
         "dev": [
             "black == 22.6.0",
             "isort == 5.10.1",
-            "pre-commit == 2.19.0",
+            "pre-commit ==2.20.0",
         ],
     },
 )
