@@ -49,6 +49,7 @@ repos:
     rev: v0.961
     hooks:
       - id: mypy
+        args: [ --ignore-missing-imports, --show-error-codes ]
 
   - repo: https://github.com/myint/autoflake
     rev: v1.4
