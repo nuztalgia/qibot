@@ -3,7 +3,7 @@ from typing import Any, Final
 
 from discord import ApplicationContext, Bot, TextChannel, Webhook
 
-from qibot.utils.json import load_dict_from_file
+from qibot.utils.json import load_json_from_file
 from qibot.utils.logging import Log
 from qibot.utils.templates import Template
 
@@ -14,7 +14,9 @@ _CTX_MISMATCH: Final[Template] = Template("That command is only available in <#$
 _CHANNEL_CACHE: Final[dict[str, TextChannel]] = {}
 _WEBHOOK_CACHE: Final[dict[str, Webhook]] = {}
 
-_CONFIG: Final[dict[str, Any]] = load_dict_from_file(filename="config")
+_CONFIG: Final[dict[str, Any]] = load_json_from_file(
+    filename="config", data_type=dict, lowercase_dict_keys=True
+)
 
 BOT_TOKEN: Final[str] = _CONFIG["bot_token"]
 SERVER_ID: Final[int] = _CONFIG["server_id"]
