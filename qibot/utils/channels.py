@@ -1,9 +1,9 @@
 from enum import Enum, auto
-from typing import Any, Final
+from typing import Final
 
 from discord import ApplicationContext, Bot, TextChannel, Webhook
 
-from qibot.utils.json import load_json_from_file
+from qibot.utils.config import BotConfig
 from qibot.utils.logging import Log
 from qibot.utils.templates import Template
 
@@ -14,18 +14,12 @@ _CTX_MISMATCH: Final[Template] = Template("That command is only available in <#$
 _CHANNEL_CACHE: Final[dict[str, TextChannel]] = {}
 _WEBHOOK_CACHE: Final[dict[str, Webhook]] = {}
 
-_CONFIG: Final[dict[str, Any]] = load_json_from_file(
-    filename="config", data_type=dict, lowercase_dict_keys=True
-)
-
-BOT_TOKEN: Final[str] = _CONFIG["bot_token"]
-SERVER_ID: Final[int] = _CONFIG["server_id"]
-
 
 class BotChannel(Enum):
     @staticmethod
     def _generate_next_value_(name: str, start: int, count: int, values: list) -> int:
-        return _CONFIG["channel_ids"].get(name.lower(), 0)
+        # TODO: Define a channel to fall back to, so the others can be "required=False".
+        return BotConfig.get_channel_id(name, required=True)
 
     @classmethod
     async def initialize_all(cls, bot: Bot) -> None:

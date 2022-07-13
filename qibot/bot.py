@@ -17,12 +17,12 @@ from discord.utils import utcnow
 import qibot
 from qibot.characters import Overseer
 from qibot.cogs import MemberListeners
-from qibot.utils import BOT_TOKEN, SERVER_ID, BotChannel, Log
+from qibot.utils import BotChannel, BotConfig, Log
 
 
 def main() -> None:
-    bot = QiBot(SERVER_ID)
-    bot.run(BOT_TOKEN)
+    bot = QiBot(BotConfig.get_server_id())
+    bot.run(BotConfig.get_bot_token())
 
 
 # noinspection PyDunderSlots, PyUnresolvedReferences
