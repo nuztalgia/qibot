@@ -14,15 +14,10 @@ from discord import (
 )
 from discord.utils import utcnow
 
-import qibot
 from qibot.characters import Overseer
 from qibot.cogs import MemberListeners
 from qibot.utils import BotChannel, BotConfig, Log
-
-
-def main() -> None:
-    bot = QiBot(BotConfig.get_server_id())
-    bot.run(BotConfig.get_bot_token())
+from qibot.version import VERSION
 
 
 # noinspection PyDunderSlots, PyUnresolvedReferences
@@ -35,16 +30,23 @@ def _get_required_intents() -> Intents:
 
 
 class QiBot(Bot):
-    def __init__(self, server_id: int) -> None:
-        Log.i(f"Starting QiBot {qibot.VERSION}.")
+    def __init__(self, **options) -> None:
+        Log.i(f"Starting QiBot {VERSION}.")
         self.started_at: Final[datetime] = utcnow()
 
-        super().__init__(
-            allowed_mentions=AllowedMentions.none(),
-            debug_guilds=[server_id],
-            help_command=None,
-            intents=_get_required_intents(),
-        )
+        # These options may be overridden by args passed into this function.
+        flexible_options = {
+            "allowed_mentions": AllowedMentions.none(),
+            "help_command": None,
+        }
+
+        # These options will override the corresponding args if they're passed in.
+        required_options = {
+            "debug_guilds": [BotConfig.get_server_id()],
+            "intents": _get_required_intents(),
+        }
+
+        super().__init__(**(flexible_options | options | required_options))
 
         # TODO: Redesign cog-adding mechanism when there are more cogs to deal with.
         self.add_cog(_MetaCommands(self))
@@ -53,7 +55,7 @@ class QiBot(Bot):
     def run(self, bot_token: str) -> None:
         try:
             Log.i("Attempting to log in to Discord...")
-            super().run(bot_token)
+            super().run(BotConfig.get_bot_token())
         except LoginFailure:
             Log.e("Failed to log in. Make sure the BOT_TOKEN is configured properly.")
 
@@ -93,7 +95,7 @@ class _MetaCommands(Cog):
     async def about(self, ctx: ApplicationContext) -> None:
         if await BotChannel.BOT_SPAM.is_context(ctx):
             # noinspection PyUnresolvedReferences
-            await Overseer.show_bot_metadata(ctx, qibot.VERSION, ctx.bot.started_at)
+            await Overseer.show_bot_metadata(ctx, ctx.bot.started_at)
 
     @slash_command(description="Shows a motivational quote. (Under construction!)")
     async def help(self, ctx: ApplicationContext) -> None:

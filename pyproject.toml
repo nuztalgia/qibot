@@ -27,7 +27,7 @@ classifiers = [
 dynamic = ["dependencies", "optional-dependencies", "urls", "version"]
 
 [project.scripts]
-qibot = "qibot.bot:main"
+qibot = "qibot.cli:main"
 
 [tool.black]
 target-version = ["py310"]
@@ -40,4 +40,4 @@ convention = "google"
 add-ignore = "D1"
 
 [tool.setuptools.dynamic]
-version = { attr = "qibot.VERSION" }
+version = { attr = "qibot.version.VERSION" }
