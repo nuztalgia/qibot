@@ -55,9 +55,9 @@ class QiBot(Bot):
     def run(self, bot_token: str) -> None:
         try:
             Log.i("Attempting to log in to Discord...")
-            super().run(BotConfig.get_bot_token())
+            super().run(bot_token)
         except LoginFailure:
-            Log.e("Failed to log in. Make sure the BOT_TOKEN is configured properly.")
+            Log.e("Failed to log in. Make sure your bot token is configured properly.")
 
     async def on_ready(self) -> None:
         Log.i(f'  Successfully logged in as "{self.user}".')

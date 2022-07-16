@@ -1,5 +1,6 @@
 *.bak
 *.egg-info/
+*.key
 *.py[cdo]
 *.sw[a-p]
 .DS_Store
