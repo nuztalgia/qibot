@@ -16,20 +16,23 @@ class _Token(Enum):
     DEV = auto()
     PROD = auto()
 
-    def get_file(self) -> Optional[Path]:
+    @classmethod
+    def get_files(cls) -> tuple[Optional[Path], ...]:
+        return tuple(member._get_file() for member in cls)
+
+    def _get_file(self) -> Optional[Path]:
         return self.value if self.value.is_file() else None
 
 
-def get_token_file(force_prod: bool, msg_prefix: str = "\n") -> Optional[Path]:
-    dev_file = _Token.DEV.get_file()
-    prod_file = _Token.PROD.get_file()
+def get_token_file(prod: bool) -> Optional[Path]:
+    dev_file, prod_file = _Token.get_files()
 
     if not (dev_file or prod_file):
-        print(f"{msg_prefix}You currently don't have any saved bot tokens.")
-    elif force_prod and not prod_file:
-        print(f"{msg_prefix}You currently don't have a saved bot token for production.")
+        print("\nYou currently don't have any saved bot tokens.")
+    elif prod and not prod_file:
+        print("\nYou currently don't have a saved bot token for production.")
     else:
         # Use prod if -p was specified, otherwise try to use dev (with prod as backup).
-        return prod_file if force_prod else (dev_file or prod_file)
+        return prod_file if prod else (dev_file or prod_file)
 
     return None

@@ -52,12 +52,14 @@ class QiBot(Bot):
         self.add_cog(_MetaCommands(self))
         self.add_cog(MemberListeners(self))
 
-    def run(self, bot_token: str) -> None:
+    def run(self, bot_token: str) -> bool:
         try:
             Log.i("Attempting to log in to Discord...")
             super().run(bot_token)
+            return True
         except LoginFailure:
             Log.e("Failed to log in. Make sure your bot token is configured properly.")
+        return False
 
     async def on_ready(self) -> None:
         Log.i(f'  Successfully logged in as "{self.user}".')

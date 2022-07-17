@@ -5,31 +5,35 @@ import sys
 from typing import Final
 
 from qibot.cli.tokens import get_token_file
-from qibot.version import VERSION
+from qibot.cli.utils import print_bot_version
 
-_ERROR_PREFIX: Final[str] = "qibot: error: "
+_SUCCESS: Final[int] = 0
+_ERROR: Final[int] = 1
 
 
-def main() -> None:
+def main() -> int:
     args = _get_args()
     argv = sys.argv[1:]
 
     if operator.countOf(vars(args).values(), True) > 1:
         arg_info = ('", "'.join(argv[:-1])) + ('",' if len(argv) > 2 else '"')
         arg_info = f'("{arg_info} and "{argv[-1]}"). They are mutually exclusive.'
-        print(f"{_ERROR_PREFIX}Cannot simultaneously use multiple options {arg_info}")
-        return
+        print(f"qibot: error: Cannot simultaneously use multiple options {arg_info}")
+        return _ERROR
 
     if args.version:
-        _print_version()
-        return
+        print_bot_version()
+        return _SUCCESS
 
-    if not (token_file := get_token_file(args.prod, _ERROR_PREFIX)):
-        return
+    if not (token_file := get_token_file(args.prod)):
+        # `get_token_file` takes care of printing an appropriate error message.
+        return _ERROR
 
-    # The bot module is only imported (and initialization code is only run) if needed.
+    # We only import the bot module (and run its initialization code) when it's needed.
     bot_module = importlib.import_module("qibot.bot")
-    bot_module.QiBot().run(token_file.read_text())
+
+    bot_is_running = bot_module.QiBot().run(token_file.read_text())
+    return _SUCCESS if bot_is_running else _ERROR
 
 
 def _get_args() -> argparse.Namespace:
@@ -51,11 +55,3 @@ def _get_args() -> argparse.Namespace:
     add_option("version", "Display the currently installed version of QiBot.")
 
     return parser.parse_args()
-
-
-def _print_version() -> None:
-    print(
-        "\n               o|         |    \n          ,---..|---.,---.|--- "
-        "\n          |   |||   ||   ||    \n          `---|``---'`---'`---'"
-        f"\n              |  VERSION {VERSION}\n"
-    )
