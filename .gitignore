@@ -5,6 +5,7 @@
 *.sw[a-p]
 .DS_Store
 .idea/
+.keys/
 .mypy_cache/
 .vscode/
 __pycache__/

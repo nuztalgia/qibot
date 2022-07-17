@@ -4,11 +4,13 @@ import operator
 import sys
 from typing import Final
 
-from qibot.cli.tokens import get_token_file
+from qibot.cli.tokens import get_token_file_info, matches_token_pattern
 from qibot.cli.utils import decrypt_bytes, print_bot_version
 
 _SUCCESS: Final[int] = 0
 _ERROR: Final[int] = 1
+
+_ERROR_PREFIX: Final[str] = "qibot: error: "
 
 
 def main() -> int:
@@ -18,23 +20,30 @@ def main() -> int:
     if operator.countOf(vars(args).values(), True) > 1:
         arg_info = ('", "'.join(argv[:-1])) + ('",' if len(argv) > 2 else '"')
         arg_info = f'("{arg_info} and "{argv[-1]}"). They are mutually exclusive.'
-        print(f"qibot: error: Cannot simultaneously use multiple options {arg_info}")
+        print(f"{_ERROR_PREFIX}Cannot simultaneously use multiple options {arg_info}")
         return _ERROR
 
     if args.version:
         print_bot_version()
         return _SUCCESS
 
-    token_file, token_file_password = get_token_file(args.prod)
+    token_file, password = get_token_file_info(args.prod)
 
     if not token_file:
-        # `get_token_file` takes care of printing an appropriate error message.
+        # `get_token_file_info` takes care of printing an appropriate error message.
         return _ERROR
 
-    if isinstance(token_file_password, str):
-        bot_token = decrypt_bytes(token_file_password, data=token_file.read_bytes())
-    else:
-        bot_token = token_file.read_text()
+    bot_token = decrypt_bytes(data=token_file.read_bytes(), password=password)
+
+    if not matches_token_pattern(bot_token):
+        print(f"{_ERROR_PREFIX}Decrypted keyfile data doesn't look like a bot token.\n")
+        if password:
+            print("Please make sure you have the correct password, then try again.\n")
+        print(
+            "If this happens repeatedly and/or unexpectedly, try removing,\n"
+            "regenerating, and then re-adding your bot token(s).\n"
+        )
+        return _ERROR
 
     # We only import the bot module (and run its initialization code) when it's needed.
     bot_module = importlib.import_module("qibot.bot")
@@ -48,7 +57,7 @@ def _get_args() -> argparse.Namespace:
         prog="qibot",
         description=(
             "  QiBot is a Discord bot inspired by Stardew Valley.\n"
-            '  Run "qibot" with no options to start the bot in the default mode.'
+            '  Run "qibot" with no options to start the bot in development mode.'
         ),
         formatter_class=argparse.RawTextHelpFormatter,
         add_help=False,
@@ -58,7 +67,7 @@ def _get_args() -> argparse.Namespace:
         parser.add_argument(f"-{name[0]}", f"--{name}", action=action, help=desc)
 
     add_option("prod", "Run QiBot in production (i.e. password-protected) mode.")
-    add_option("help", "Display this help message.", action="help")
     add_option("version", "Display the currently installed version of QiBot.")
+    add_option("help", "Display this help message.", action="help")
 
     return parser.parse_args()
