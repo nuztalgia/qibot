@@ -25,13 +25,14 @@ This project depends on a number of third-party open source Python libraries. Th
 following table includes links to their respective GitHub repositories, PyPI
 distribution pages, and full license text:
 
-| Project                                                 | Release                                                                                  | License                                                                                                               |
-| ------------------------------------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| [aiohttp](https://github.com/aio-libs/aiohttp)          | [![Release](https://img.shields.io/pypi/v/aiohttp)](https://pypi.org/project/aiohttp/)   | [![License](https://img.shields.io/pypi/l/aiohttp)](https://github.com/aio-libs/aiohttp/blob/master/LICENSE.txt)      |
-| [json5](https://github.com/dpranke/pyjson5)             | [![Release](https://img.shields.io/pypi/v/json5)](https://pypi.org/project/json5/)       | [![License](https://img.shields.io/pypi/l/json5)](https://github.com/dpranke/pyjson5/blob/main/LICENSE)               |
-| [humanize](https://github.com/python-humanize/humanize) | [![Release](https://img.shields.io/pypi/v/humanize)](https://pypi.org/project/humanize/) | [![License](https://img.shields.io/pypi/l/humanize)](https://github.com/python-humanize/humanize/blob/main/LICENCE)   |
-| [Pillow](https://github.com/python-pillow/Pillow)       | [![Release](https://img.shields.io/pypi/v/Pillow)](https://pypi.org/project/Pillow/)     | [![License](https://img.shields.io/pypi/l/Pillow)](https://github.com/python-pillow/Pillow/blob/main/LICENSE)         |
-| [Pycord](https://github.com/Pycord-Development/pycord)  | [![Release](https://img.shields.io/pypi/v/py-cord)](https://pypi.org/project/py-cord/)   | [![License](https://img.shields.io/pypi/l/py-cord)](https://github.com/Pycord-Development/pycord/blob/master/LICENSE) |
+| Project                                                 | Release                                                                                          | License                                                                                                               |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| [aiohttp](https://github.com/aio-libs/aiohttp)          | [![Release](https://img.shields.io/pypi/v/aiohttp)](https://pypi.org/project/aiohttp/)           | [![License](https://img.shields.io/pypi/l/aiohttp)](https://github.com/aio-libs/aiohttp/blob/master/LICENSE.txt)      |
+| [cryptography](https://github.com/pyca/cryptography)    | [![Release](https://img.shields.io/pypi/v/cryptography)](https://pypi.org/project/cryptography/) | [![License](https://img.shields.io/pypi/l/cryptography)](https://github.com/pyca/cryptography/blob/main/LICENSE)      |
+| [json5](https://github.com/dpranke/pyjson5)             | [![Release](https://img.shields.io/pypi/v/json5)](https://pypi.org/project/json5/)               | [![License](https://img.shields.io/pypi/l/json5)](https://github.com/dpranke/pyjson5/blob/main/LICENSE)               |
+| [humanize](https://github.com/python-humanize/humanize) | [![Release](https://img.shields.io/pypi/v/humanize)](https://pypi.org/project/humanize/)         | [![License](https://img.shields.io/pypi/l/humanize)](https://github.com/python-humanize/humanize/blob/main/LICENCE)   |
+| [Pillow](https://github.com/python-pillow/Pillow)       | [![Release](https://img.shields.io/pypi/v/Pillow)](https://pypi.org/project/Pillow/)             | [![License](https://img.shields.io/pypi/l/Pillow)](https://github.com/python-pillow/Pillow/blob/main/LICENSE)         |
+| [Pycord](https://github.com/Pycord-Development/pycord)  | [![Release](https://img.shields.io/pypi/v/py-cord)](https://pypi.org/project/py-cord/)           | [![License](https://img.shields.io/pypi/l/py-cord)](https://github.com/Pycord-Development/pycord/blob/master/LICENSE) |
 
 ## Fair Use Disclaimer
 
