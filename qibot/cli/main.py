@@ -5,7 +5,7 @@ import sys
 from typing import Final
 
 from qibot.cli.tokens import get_token_file
-from qibot.cli.utils import print_bot_version
+from qibot.cli.utils import decrypt_bytes, print_bot_version
 
 _SUCCESS: Final[int] = 0
 _ERROR: Final[int] = 1
@@ -25,14 +25,21 @@ def main() -> int:
         print_bot_version()
         return _SUCCESS
 
-    if not (token_file := get_token_file(args.prod)):
+    token_file, token_file_password = get_token_file(args.prod)
+
+    if not token_file:
         # `get_token_file` takes care of printing an appropriate error message.
         return _ERROR
+
+    if isinstance(token_file_password, str):
+        bot_token = decrypt_bytes(token_file_password, data=token_file.read_bytes())
+    else:
+        bot_token = token_file.read_text()
 
     # We only import the bot module (and run its initialization code) when it's needed.
     bot_module = importlib.import_module("qibot.bot")
 
-    bot_is_running = bot_module.QiBot().run(token_file.read_text())
+    bot_is_running = bot_module.QiBot().run(bot_token)
     return _SUCCESS if bot_is_running else _ERROR
 
 
