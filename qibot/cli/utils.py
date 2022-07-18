@@ -112,12 +112,14 @@ else:
         result = ""
         print(prompt, end="")
 
-        while (input_char := msvcrt.getwch()) not in _WINDOWS_NEWLINES:
+        while input_char := msvcrt.getwch():  # type: ignore[attr-defined]
+            if input_char in _WINDOWS_NEWLINES:
+                break
             if input_char == "\003":
                 raise KeyboardInterrupt
             result = result[:-1] if input_char == "\b" else f"{result}{input_char}"
 
         for newline_char in _WINDOWS_NEWLINES:
-            msvcrt.putwch(newline_char)
+            msvcrt.putwch(newline_char)  # type: ignore[attr-defined]
 
         return result
