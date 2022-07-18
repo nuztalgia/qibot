@@ -8,6 +8,7 @@ setup(
     },
     install_requires=[
         "aiohttp >=3.8.0",
+        "colorama >=0.4.5",
         "cryptography >=37.0.0",
         "humanize >=4.2.3",
         "json5 >=0.9.8",

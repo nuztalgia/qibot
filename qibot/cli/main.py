@@ -4,13 +4,19 @@ import operator
 import sys
 from typing import Final
 
+import colorama
+
 from qibot.cli.tokens import get_token_file_info, matches_token_pattern
-from qibot.cli.utils import decrypt_bytes, print_bot_version
+from qibot.cli.utils import color_cyan, color_magenta, decrypt_bytes
+from qibot.version import VERSION
+
+_PROGRAM_NAME: Final[str] = color_magenta("qibot")
+_ERROR_PREFIX: Final[str] = f"{_PROGRAM_NAME}: error: "
 
 _SUCCESS: Final[int] = 0
 _ERROR: Final[int] = 1
 
-_ERROR_PREFIX: Final[str] = "qibot: error: "
+colorama.init(autoreset=True)
 
 
 def main() -> int:
@@ -54,7 +60,7 @@ def main() -> int:
 
 def _get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        prog="qibot",
+        prog=_PROGRAM_NAME,
         description=(
             "  QiBot is a Discord bot inspired by Stardew Valley.\n"
             '  Run "qibot" with no options to start the bot in development mode.'
@@ -71,3 +77,12 @@ def _get_args() -> argparse.Namespace:
     add_option("help", "Display this help message.", action="help")
 
     return parser.parse_args()
+
+
+def print_bot_version() -> None:
+    qibot_text = color_magenta(
+        "\n               o|         |    \n          ,---..|---.,---.|--- "
+        "\n          |   |||   ||   ||    \n          `---|``---'`---'`---'"
+        "\n              |  "
+    )
+    print(qibot_text + color_cyan(f"VERSION {VERSION}\n"))
