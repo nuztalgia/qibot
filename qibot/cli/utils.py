@@ -1,19 +1,49 @@
+import sys
 from base64 import urlsafe_b64encode
 from functools import partial
+from importlib import import_module
 from os import urandom
 from pathlib import Path
+from types import ModuleType
 from typing import Callable, Final, Optional, TypeAlias
 
-from colorama import Fore, Style
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-_ColorText: TypeAlias = Callable[[str], str]
-_FormatText: TypeAlias = Callable[[str], Optional[str]]
+from qibot.cli.colors import cyan, grey, red
+
+_FormatText: TypeAlias = Callable[[str], str]
+
+_highlight: _FormatText = cyan
+_lowlight: _FormatText = grey
 
 _KEYS_DIR: Final[Path] = Path(__file__).parent / ".keys"
 _YES_RESPONSES: Final[tuple[str, str]] = ("yes", "y")
+
+
+def confirm_or_exit(question: str) -> None:
+    if not get_bool_input(question):
+        exit_cli("Received a non-affirmative response.", is_error=False)
+
+
+def exit_cli(reason: str, is_error: bool = True) -> None:
+    colored_reason = red(reason) if is_error else _lowlight(reason)
+    print(f"\n{colored_reason} {_lowlight('Exiting process.')}\n")
+    raise SystemExit(1 if is_error else 0)
+
+
+def get_bool_input(question: str) -> bool:
+    colored_prompt = '" or "'.join(_highlight(response) for response in _YES_RESPONSES)
+    result = _get_input(f'{question} If so, type "{colored_prompt}":')
+    return result.strip("'\"").lower() in _YES_RESPONSES
+
+
+def get_hidden_input(prompt: str, format_text: Optional[_FormatText] = None) -> str:
+    result = _get_input(colored_prompt := _highlight(f"{prompt}:"), hidden=True)
+    output = _lowlight((format_text and format_text(result)) or "*" * len(result))
+    print(f"\033[F\033[1A{colored_prompt} {output}")  # Overwrites the previous line.
+    return result
 
 
 def get_key_file(filename: str, qualifier: str = "") -> Path:
@@ -23,28 +53,6 @@ def get_key_file(filename: str, qualifier: str = "") -> Path:
         _KEYS_DIR.mkdir()
     qualifier = f".{qualifier.strip().lower()}" if qualifier else ""
     return _KEYS_DIR / f".{filename.strip().lower()}{qualifier}.key"
-
-
-def get_secret(prompt: str, format_text: Optional[_FormatText] = None) -> str:
-    prompt = color_cyan(f"{prompt.strip().upper()}: ")
-    result = getpass(prompt).strip()
-    output = (format_text and format_text(result)) or color_grey("*" * len(result))
-    print(f"\033[F\033[1A{prompt}{output}\n")  # This overwrites the previous line.
-    return result
-
-
-def get_yes_or_no_answer(question: str) -> bool:
-    # The prompt must go through `print` (instead of `input`) to be formatted correctly.
-    print(f"{question} If so, type {_FORMATTED_RESPONSES}: ", end="")
-    user_response = input()
-    print()  # Print an empty line to make subsequent output sections easier to read.
-    return user_response.strip(" '\"").lower() in _YES_RESPONSES
-
-
-def confirm_or_exit(question: str) -> None:
-    if not get_yes_or_no_answer(question):
-        print(color_grey("Received a non-affirmative response. Exiting process.\n"))
-        raise SystemExit(0)  # Technically a success, since it's what the user wanted.
 
 
 def encrypt_string(data: str, password: Optional[str] = None) -> bytes:
@@ -79,47 +87,38 @@ def _get_fernet(password: Optional[str]) -> Fernet:
     return Fernet(key)
 
 
-def _color(fore_color_code: str) -> _ColorText:
-    def color_text(text: str) -> str:
-        return f"{fore_color_code}{Style.BRIGHT}{text}{Style.NORMAL}{Fore.RESET}"
+def _get_input(prompt: str, hidden: bool = False) -> str:
+    # Use `print` for the prompt to ensure that any escape codes are formatted properly.
+    # However, override the default `end` with " " to keep user input on the same line.
+    print(prompt, end=" ")
+    # Leading and trailing whitespace is stripped from the result before it's returned.
+    return (_input_hidden() if hidden else input()).strip()
 
-    return color_text
 
+_WINDOWS_MODULE_NAME: Final[str] = "msvcrt"
 
-color_cyan: Final[_ColorText] = _color(Fore.CYAN)
-color_green: Final[_ColorText] = _color(Fore.GREEN)
-color_grey: Final[_ColorText] = _color(Fore.BLACK)  # "Bright black" shows up as grey.
-color_magenta: Final[_ColorText] = _color(Fore.MAGENTA)
-color_yellow: Final[_ColorText] = _color(Fore.YELLOW)
-
-_FORMATTED_RESPONSES: Final[str] = " or ".join(
-    f'"{color_cyan(response)}"' for response in _YES_RESPONSES
-)
-
-try:
-    import msvcrt
-except ImportError:
+if _WINDOWS_MODULE_NAME not in sys.builtin_module_names:
     # We're on an OS where things conveniently work out of the box.
-    import getpass as _getpass
+    from getpass import getpass
 
-    # Just need to do a bit of type wrangling to satisfy the static type checkers.
-    getpass: Final[Callable[[str], str]] = _getpass.getpass
+    def _input_hidden() -> str:
+        return getpass(prompt="")
+
 else:
     # We're on Windows, so we need to do things differently. How fun!
-    _WINDOWS_NEWLINES: Final[str] = "\r\n"
+    _MSVCRT: Final[ModuleType] = import_module(_WINDOWS_MODULE_NAME)
+    _NEWLINE_CHARS: Final[str] = "\r\n"
 
-    def getpass(prompt: str) -> str:
+    # Inspired by: https://github.com/python/cpython/blob/3.10/Lib/getpass.py#L97-L117
+    def _input_hidden() -> str:
         result = ""
-        print(prompt, end="")
 
-        while input_char := msvcrt.getwch():  # type: ignore[attr-defined]
-            if input_char in _WINDOWS_NEWLINES:
-                break
+        while (input_char := _MSVCRT.getwch()) not in _NEWLINE_CHARS:
             if input_char == "\003":
                 raise KeyboardInterrupt
             result = result[:-1] if input_char == "\b" else f"{result}{input_char}"
 
-        for newline_char in _WINDOWS_NEWLINES:
-            msvcrt.putwch(newline_char)  # type: ignore[attr-defined]
+        for newline_char in _NEWLINE_CHARS:
+            _MSVCRT.putwch(newline_char)
 
         return result

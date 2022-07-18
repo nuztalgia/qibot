@@ -1,30 +1,28 @@
 import re
 import shutil
-import string
 from enum import Enum, auto, unique
 from pathlib import Path
-from typing import Final, Optional
+from typing import Final, Optional, TypeAlias
 
+from qibot.cli.colors import green, grey, print_green, print_yellow
 from qibot.cli.utils import (
-    color_green,
-    color_grey,
-    color_magenta,
-    color_yellow,
     confirm_or_exit,
     encrypt_string,
+    exit_cli,
+    get_hidden_input,
     get_key_file,
-    get_secret,
-    get_yes_or_no_answer,
 )
 
-_TOKEN_LENGTHS: Final[tuple[int, ...]] = (24, 6, 27)
-_TOKEN_SEGMENT: Final[string.Template] = string.Template(r"[\w-]{$length}")
+_TokenInfo: TypeAlias = tuple[Path, Optional[str]]
+
+_PROMPT_BOT_TOKEN: Final[str] = "BOT TOKEN"
+_PROMPT_PASSWORD: Final[str] = "PASSWORD"
+
+_TOKEN_SEGMENT_LENGTHS: Final[tuple[int, ...]] = (24, 6, 27)
 _TOKEN_REGEX: Final[re.Pattern] = re.compile(
-    r"\.".join(_TOKEN_SEGMENT.substitute(length=length) for length in _TOKEN_LENGTHS)
+    r"\.".join(r"[\w-]{%i}" % i for i in _TOKEN_SEGMENT_LENGTHS)
 )
-_TOKEN_FORMAT: Final[str] = color_grey(
-    ".".join("*" * length for length in _TOKEN_LENGTHS)
-)
+_TOKEN_FORMAT: Final[str] = ".".join("*" * i for i in _TOKEN_SEGMENT_LENGTHS)
 
 
 @unique
@@ -42,94 +40,71 @@ class _Token(Enum):
             shutil.rmtree(self.value)
         return self.value
 
-    @classmethod
-    def get_existing_files(cls) -> tuple[Optional[Path], ...]:
-        return tuple(
-            member.file_path if member.file_path.is_file() else None for member in cls
-        )
-
 
 def matches_token_pattern(text: str) -> bool:
     return bool(_TOKEN_REGEX.fullmatch(text))
 
 
-def get_token_file_info(prod: bool) -> tuple[Optional[Path], Optional[str]]:
-    dev_file, prod_file = _Token.get_existing_files()
-
-    if not (dev_file or prod_file):
-        token_type = ""
-    elif prod and (not prod_file):
-        token_type = "production"
-    elif (not prod) and (not dev_file):
-        token_type = "development"
+def get_token_info(prod: bool, mode_label: str, prefix: str) -> _TokenInfo:
+    if (not prod) and (dev_file := _Token.DEV.file_path).is_file():
+        return dev_file, None
+    elif prod and (prod_file := _Token.PROD.file_path).is_file():
+        print(f"\n{prefix}prod: Please enter the password to decrypt your bot token.")
+        return prod_file, get_hidden_input(_PROMPT_PASSWORD)
     else:
-        # Use prod if -p was specified, otherwise try to use dev (with prod as backup).
-        prod = prod or (dev_file is None)
-        return (prod_file, get_secret("PASSWORD")) if prod else (dev_file, None)
+        print(f"\n{prefix}You currently don't have a saved bot token for {mode_label}.")
+        confirm_or_exit("\nWould you like to add one now?")
+        return _create_token_info(prod)
 
-    print(
-        f"\nYou currently don't have a saved bot token for {token_type}."
-        if token_type
-        else "\nYou currently don't have any saved bot tokens."
-    )
-    confirm_or_exit(f"Would you like to {color_magenta('add a token')} now?")
 
-    if not (bot_token := _get_new_bot_token()):
-        # `_get_new_bot_token` takes care of printing an appropriate error message.
-        return None, None
-
-    if not token_type:
-        print(
-            "If this is a token that you plan to use in production (i.e. in a server\n"
-            "that isn't just for bot testing), you should protect it with a password."
-        )
-        prod = get_yes_or_no_answer(
-            f"Do you want to {color_magenta('set a password')} for this token?"
-        )
-
-    token_file = (_Token.PROD if prod else _Token.DEV).file_path
+def _create_token_info(prod: bool) -> _TokenInfo:
+    bot_token = _get_new_bot_token()
     password = _get_new_password() if prod else None
 
+    token_file = (_Token.PROD if prod else _Token.DEV).file_path
     token_file.write_bytes(encrypt_string(data=bot_token, password=password))
 
-    print(color_green("Your token has been successfully encrypted and saved!"))
-    confirm_or_exit(f"Do you want to {color_magenta('run QiBot')} with this token now?")
+    print_green("\nYour token has been successfully encrypted and saved.")
+    confirm_or_exit("\nDo you want to use this token to start QiBot now?")
 
     return token_file, password
 
 
-def _get_new_bot_token() -> Optional[str]:
+def _get_new_bot_token() -> str:
     print(
-        "Please enter your bot token now. It'll be invisible for security reasons,\n"
-        "so don't worry about it not showing up! Just paste it in, then hit Enter."
+        "\nPlease enter your bot token now. It'll be invisible for security reasons,"
+        "\nso don't worry about it not showing up! Just paste it in, then hit Enter.\n"
     )
 
-    def format_bot_token(token: str) -> Optional[str]:
-        # Let the default formatter (all "*"s) handle the string if it isn't a token.
-        return _TOKEN_FORMAT if matches_token_pattern(token) else None
+    def format_token(token: str) -> str:
+        # Let the default formatter handle the string if it doesn't look like a token.
+        return _TOKEN_FORMAT if matches_token_pattern(token) else ""
 
-    if matches_token_pattern(bot_token := get_secret("BOT TOKEN", format_bot_token)):
-        return bot_token
-    else:
-        return print(
-            f"That doesn't look like a valid Discord bot token. The expected format is:"
-            f"\n    {_TOKEN_FORMAT}\nPlease check your bot token, then try again.\n"
-        )
+    bot_token = get_hidden_input(_PROMPT_BOT_TOKEN, format_token)
+
+    if not matches_token_pattern(bot_token):
+        message = "That doesn't seem like a valid bot token. It should look like this:"
+        print(f'\n{message}\n{grey(f"{_PROMPT_BOT_TOKEN}: {_TOKEN_FORMAT}")}')
+        exit_cli(reason="Please make sure you have the correct token, then try again.")
+
+    return bot_token
 
 
 def _get_new_password() -> str:
     print(
-        "Please enter a password for your token. It'll be invisible while you type it."
-        "\nThis password won't be stored anywhere, and will only be used to decrypt"
-        "\nyour bot token every time you start/restart QiBot in production mode."
+        "\nTo keep your bot token extra safe, it must be encrypted with a password.\n"
+        "This password won't be stored anywhere. It will only be used as a key to\n"
+        f"decrypt your token every time you start QiBot in {green('production')} mode."
     )
-    while len(password := get_secret("PASSWORD")) < 8:
-        print(color_yellow("Your password must be at least 8 characters long."))
-        confirm_or_exit("Would you like to try again?")
 
-    print("Please enter the same password again to confirm. Again, it'll be invisible.")
-    while get_secret("CONFIRM PASSWORD") != password:
-        print(color_yellow("That password doesn't match your original password."))
+    print("\nPlease enter a password for your token. Again, it'll be invisible.")
+    while len(password := get_hidden_input(_PROMPT_PASSWORD)) < (min_length := 8):
+        print_yellow(f"\nYour password must be at least {min_length} characters long.")
+        confirm_or_exit("Would you like to try a different password?")
+
+    print("\nPlease re-enter the same password again to confirm it.")
+    while get_hidden_input(_PROMPT_PASSWORD) != password:
+        print_yellow("\nThat password doesn't match your original password.")
         confirm_or_exit("Would you like to try again?")
 
     return password
