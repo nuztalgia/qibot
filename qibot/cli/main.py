@@ -6,9 +6,8 @@ from typing import Final
 
 import colorama
 
-from qibot.cli.colors import cyan, green, magenta, yellow
 from qibot.cli.tokens import get_token_info, matches_token_pattern
-from qibot.cli.utils import decrypt_bytes, exit_cli
+from qibot.cli.utils import cyan, decrypt_bytes, exit_cli, green, magenta, yellow
 from qibot.version import VERSION
 
 _PROGRAM_NAME: Final[str] = magenta("qibot")

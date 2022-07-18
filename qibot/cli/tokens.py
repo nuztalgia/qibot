@@ -4,13 +4,15 @@ from enum import Enum, auto, unique
 from pathlib import Path
 from typing import Final, Optional, TypeAlias
 
-from qibot.cli.colors import green, grey, print_green, print_yellow
 from qibot.cli.utils import (
     confirm_or_exit,
     encrypt_string,
     exit_cli,
     get_hidden_input,
     get_key_file,
+    green,
+    grey,
+    yellow,
 )
 
 _TokenInfo: TypeAlias = tuple[Path, Optional[str]]
@@ -64,7 +66,7 @@ def _create_token_info(prod: bool) -> _TokenInfo:
     token_file = (_Token.PROD if prod else _Token.DEV).file_path
     token_file.write_bytes(encrypt_string(data=bot_token, password=password))
 
-    print_green("\nYour token has been successfully encrypted and saved.")
+    print(green("\nYour token has been successfully encrypted and saved."))
     confirm_or_exit("\nDo you want to use this token to start QiBot now?")
 
     return token_file, password
@@ -99,12 +101,12 @@ def _get_new_password() -> str:
 
     print("\nPlease enter a password for your token. Again, it'll be invisible.")
     while len(password := get_hidden_input(_PROMPT_PASSWORD)) < (min_length := 8):
-        print_yellow(f"\nYour password must be at least {min_length} characters long.")
+        print(yellow(f"\nYour password must be at least {min_length} characters long."))
         confirm_or_exit("Would you like to try a different password?")
 
     print("\nPlease re-enter the same password again to confirm it.")
     while get_hidden_input(_PROMPT_PASSWORD) != password:
-        print_yellow("\nThat password doesn't match your original password.")
+        print(yellow("\nThat password doesn't match your original password."))
         confirm_or_exit("Would you like to try again?")
 
     return password
