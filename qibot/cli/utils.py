@@ -18,10 +18,10 @@ _YES_RESPONSES: Final[tuple[str, str]] = ("yes", "y")
 
 def confirm_or_exit(question: str) -> None:
     if not get_bool_input(question):
-        exit_cli("Received a non-affirmative response.", is_error=False)
+        exit_process("Received a non-affirmative response.", is_error=False)
 
 
-def exit_cli(reason: str, is_error: bool = True) -> None:
+def exit_process(reason: str, is_error: bool = True) -> None:
     colored_reason = red(reason) if is_error else grey(reason)
     print(f"\n{colored_reason} {grey('Exiting process.')}\n")
     raise SystemExit(1 if is_error else 0)
@@ -29,15 +29,23 @@ def exit_cli(reason: str, is_error: bool = True) -> None:
 
 def get_bool_input(question: str) -> bool:
     colored_prompt = '" or "'.join(cyan(response) for response in _YES_RESPONSES)
-    result = _get_input(f'{question} If so, type "{colored_prompt}":')
+    result = get_input(f'{question} If so, type "{colored_prompt}":')
     return result.strip("'\"").lower() in _YES_RESPONSES
 
 
 def get_hidden_input(prompt: str, format_text: Optional[_FormatText] = None) -> str:
-    result = _get_input(colored_prompt := cyan(f"{prompt}:"), hidden=True)
+    result = get_input(colored_prompt := cyan(f"{prompt}:"), hidden=True)
     output = grey((format_text and format_text(result)) or "*" * len(result))
     print(f"\033[F\033[1A{colored_prompt} {output}")  # Overwrites the previous line.
     return result
+
+
+def get_input(prompt: str, hidden: bool = False) -> str:
+    # Use `print` for the prompt to ensure that any escape codes are formatted properly.
+    # However, override the default `end` with " " to keep user input on the same line.
+    print(prompt, end=" ")
+    # Leading and trailing whitespace is stripped from the result before it's returned.
+    return (getpass(prompt="") if hidden else input()).strip()
 
 
 def get_key_file(filename: str, qualifier: str = "") -> Path:
@@ -49,18 +57,18 @@ def get_key_file(filename: str, qualifier: str = "") -> Path:
     return _KEYS_DIR / f".{filename.strip().lower()}{qualifier}.key"
 
 
-def encrypt_string(data: str, password: Optional[str] = None) -> bytes:
-    return _get_fernet(password).encrypt(data.encode())
-
-
-def decrypt_bytes(data: bytes, password: Optional[str] = None) -> str:
+def read_decrypted(file_path: Path, password: Optional[str] = None) -> str:
     try:
-        return _get_fernet(password).decrypt(data).decode()
+        return _fernet(password).decrypt(file_path.read_bytes()).decode()
     except InvalidToken:
         return ""
 
 
-def _get_fernet(password: Optional[str]) -> Fernet:
+def write_encrypted(file_path: Path, data: str, password: Optional[str] = None) -> None:
+    file_path.write_bytes(_fernet(password).encrypt(data.encode()))
+
+
+def _fernet(password: Optional[str]) -> Fernet:
     def get_extra_bytes(filename: str, get_initial_bytes: Callable[[], bytes]) -> bytes:
         extra_file = get_key_file(filename, qualifier="fernet")
         if not extra_file.is_file():
@@ -79,14 +87,6 @@ def _get_fernet(password: Optional[str]) -> Fernet:
         key = get_extra_bytes("dev", Fernet.generate_key)
 
     return Fernet(key)
-
-
-def _get_input(prompt: str, hidden: bool = False) -> str:
-    # Use `print` for the prompt to ensure that any escape codes are formatted properly.
-    # However, override the default `end` with " " to keep user input on the same line.
-    print(prompt, end=" ")
-    # Leading and trailing whitespace is stripped from the result before it's returned.
-    return (getpass(prompt="") if hidden else input()).strip()
 
 
 def _color(fore_color_code: str) -> _FormatText:

@@ -6,12 +6,12 @@ from typing import Final, Optional, TypeAlias
 
 from qibot.cli.utils import (
     confirm_or_exit,
-    encrypt_string,
-    exit_cli,
+    exit_process,
     get_hidden_input,
     get_key_file,
     green,
     grey,
+    write_encrypted,
     yellow,
 )
 
@@ -60,34 +60,30 @@ def get_token_info(prod: bool, mode_label: str, prefix: str) -> _TokenInfo:
 
 
 def _create_token_info(prod: bool) -> _TokenInfo:
+    token_file = (_Token.PROD if prod else _Token.DEV).file_path
     bot_token = _get_new_bot_token()
     password = _get_new_password() if prod else None
 
-    token_file = (_Token.PROD if prod else _Token.DEV).file_path
-    token_file.write_bytes(encrypt_string(data=bot_token, password=password))
+    write_encrypted(file_path=token_file, data=bot_token, password=password)
 
     print(green("\nYour token has been successfully encrypted and saved."))
-    confirm_or_exit("\nDo you want to use this token to start QiBot now?")
+    confirm_or_exit("\nDo you want to use this token to run your bot now?")
 
     return token_file, password
 
 
 def _get_new_bot_token() -> str:
-    print(
-        "\nPlease enter your bot token now. It'll be invisible for security reasons,"
-        "\nso don't worry about it not showing up! Just paste it in, then hit Enter.\n"
-    )
-
     def format_token(token: str) -> str:
         # Let the default formatter handle the string if it doesn't look like a token.
         return _TOKEN_FORMAT if matches_token_pattern(token) else ""
 
+    print("\nPlease enter your bot token now. It'll be invisible for security reasons.")
     bot_token = get_hidden_input(_PROMPT_BOT_TOKEN, format_token)
 
     if not matches_token_pattern(bot_token):
         message = "That doesn't seem like a valid bot token. It should look like this:"
         print(f'\n{message}\n{grey(f"{_PROMPT_BOT_TOKEN}: {_TOKEN_FORMAT}")}')
-        exit_cli(reason="Please make sure you have the correct token, then try again.")
+        exit_process("Please make sure you have the correct token, then try again.")
 
     return bot_token
 
@@ -96,15 +92,15 @@ def _get_new_password() -> str:
     print(
         "\nTo keep your bot token extra safe, it must be encrypted with a password.\n"
         "This password won't be stored anywhere. It will only be used as a key to\n"
-        f"decrypt your token every time you start QiBot in {green('production')} mode."
+        f"decrypt your token every time you run the bot in {green('production')} mode."
     )
 
-    print("\nPlease enter a password for your token. Again, it'll be invisible.")
+    print("\nPlease enter a password for your production token.")
     while len(password := get_hidden_input(_PROMPT_PASSWORD)) < (min_length := 8):
         print(yellow(f"\nYour password must be at least {min_length} characters long."))
-        confirm_or_exit("Would you like to try a different password?")
+        confirm_or_exit("Would you like to try a different one?")
 
-    print("\nPlease re-enter the same password again to confirm it.")
+    print("\nPlease re-enter the same password again to confirm.")
     while get_hidden_input(_PROMPT_PASSWORD) != password:
         print(yellow("\nThat password doesn't match your original password."))
         confirm_or_exit("Would you like to try again?")
