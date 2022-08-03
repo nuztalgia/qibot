@@ -9,15 +9,14 @@ from discord import (
     Bot,
     Cog,
     Intents,
-    LoginFailure,
     slash_command,
 )
 from discord.utils import utcnow
 
 from qibot.characters import Overseer
 from qibot.cogs import MemberListeners
+from qibot.meta import VERSION
 from qibot.utils import BotChannel, BotConfig, Log
-from qibot.version import VERSION
 
 
 # noinspection PyDunderSlots, PyUnresolvedReferences
@@ -52,16 +51,7 @@ class QiBot(Bot):
         self.add_cog(_MetaCommands(self))
         self.add_cog(MemberListeners(self))
 
-    def run(self, bot_token: str) -> None:
-        try:
-            Log.i("Attempting to log in to Discord...")
-            super().run(bot_token)
-        except LoginFailure:
-            Log.e("Failed to log in. Make sure your bot token is configured properly.")
-
     async def on_ready(self) -> None:
-        Log.i(f'  Successfully logged in as "{self.user}".')
-
         server_name = self._get_server_name()
         if not server_name:
             return await self.close()

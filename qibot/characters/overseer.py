@@ -5,8 +5,8 @@ from discord import ApplicationContext
 
 from qibot.characters.core import Action, Character
 from qibot.embeds import create_inline_fields
+from qibot.meta import VERSION
 from qibot.utils import format_time, get_member_nametag
-from qibot.version import VERSION
 
 _DEVELOPER_DISCORD_TAG: Final[str] = "<@318178318488698891>"
 _GITHUB_LINK: Final[str] = "[Available on GitHub!](https://github.com/nuztalgia/qibot)"

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qibot"
-description = "A Discord bot with a Stardew Valley theme."
+description = "A modern Discord bot inspired by Stardew Valley."
 requires-python = ">=3.10"
 authors = [
     { name = "Nuztalgia" },
@@ -27,7 +27,7 @@ classifiers = [
 dynamic = ["dependencies", "optional-dependencies", "urls", "version"]
 
 [project.scripts]
-qibot = "qibot.cli:main"
+qibot = "qibot.meta:main"
 
 [tool.black]
 target-version = ["py310"]
@@ -40,4 +40,4 @@ convention = "google"
 add-ignore = "D1"
 
 [tool.setuptools.dynamic]
-version = { attr = "qibot.version.VERSION" }
+version = { attr = "qibot.meta.VERSION" }
