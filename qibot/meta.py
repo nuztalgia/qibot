@@ -7,18 +7,21 @@ VERSION: Final[str] = "0.2.0"
 
 def main() -> int:
     (
-        Botstrap(colors := ThemeColors(Color.magenta))
-        .register_token(
-            uid="prod",
-            requires_password=True,
-            display_name=Color.green("production"),
-        )
+        Botstrap(colors=(colors := ThemeColors(Color.pink)))
         .register_token(
             uid="dev",
             requires_password=False,
             display_name=Color.yellow("development"),
         )
-        .parse_args(version=_get_display_version(colors))
+        .register_token(
+            uid="prod",
+            requires_password=True,
+            display_name=Color.green("production"),
+        )
+        .parse_args(
+            description="QiBot is a modern Discord bot inspired by Stardew Valley.",
+            version=_get_display_version(colors),
+        )
         .run_bot("qibot.bot.QiBot")
     )
     return 0
