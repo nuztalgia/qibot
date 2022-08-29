@@ -52,7 +52,7 @@ repos:
         args: [--ignore-missing-imports, --show-error-codes]
 
   - repo: https://github.com/myint/autoflake
-    rev: v1.4
+    rev: v1.5.1
     hooks:
       - id: autoflake
         args: [--in-place, --remove-all-unused-imports, --remove-unused-variables]
@@ -97,6 +97,6 @@ repos:
         args: [--autofix]
 
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 32.171.0
+    rev: 32.182.4
     hooks:
       - id: renovate-config-validator
