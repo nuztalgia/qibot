@@ -24,7 +24,7 @@ classifiers = [
     "Topic :: Games/Entertainment :: Role-Playing",
     "Topic :: Games/Entertainment :: Simulation",
 ]
-dynamic = ["dependencies", "optional-dependencies", "urls", "version"]
+dynamic = ["dependencies", "urls", "version"]
 
 [project.scripts]
 qibot = "qibot.meta:main"

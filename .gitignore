@@ -3,12 +3,12 @@
 *.key
 *.py[cdo]
 *.sw[a-p]
+*config.json
+*venv/
 .DS_Store
+.coverage
 .idea/
-.keys/
-.mypy_cache/
+.tox/
 .vscode/
-__pycache__/
-config.json
+build/
 dist/
-venv/

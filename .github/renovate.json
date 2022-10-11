@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
-  "assignees": ["nuztalgia"],
+  "extends": ["config:base", "group:allNonMajor"],
+  "dependencyDashboardApproval": true,
   "dependencyDashboardAutoclose": true
 }
