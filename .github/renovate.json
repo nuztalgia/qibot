@@ -1,6 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base", "group:allNonMajor"],
+  "extends": ["config:base", "schedule:weekly", "group:allNonMajor", ":automergeMinor"],
   "dependencyDashboardApproval": true,
-  "dependencyDashboardAutoclose": true
+  "dependencyDashboardAutoclose": true,
+  "packageRules": [
+    {
+      "matchPackageNames": ["botstrap"],
+      "extends": ["schedule:daily"],
+      "rangeStrategy": "bump",
+      "dependencyDashboardApproval": false
+    }
+  ]
 }

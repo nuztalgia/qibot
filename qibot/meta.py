@@ -10,7 +10,11 @@ VERSION: Final[str] = "0.2.0"
 
 def main() -> int:
     botstrap = (
-        Botstrap(colors=(colors := CliColors(Color.pink)))
+        Botstrap(
+            desc="QiBot is a modern Discord bot inspired by Stardew Valley.",
+            colors=(colors := CliColors(Color.pink)),
+            version=_get_display_version(colors),
+        )
         .register_token(
             uid="dev",
             display_name=Color.yellow("development"),
@@ -23,9 +27,7 @@ def main() -> int:
     )
 
     args = botstrap.parse_args(
-        description="QiBot is a modern Discord bot inspired by Stardew Valley.",
-        version=_get_display_version(colors),
-        ll=Option(
+        loglevel=Option(
             default="i",
             choices=("d", "debug", "i", "info", "w", "warning", "e", "error"),
             help="The lowest message level to log.",
@@ -33,7 +35,7 @@ def main() -> int:
         allow_pings=Option(flag=True, help="Allow the bot to ping people/roles."),
     )
 
-    initialize_logging(log_level=args.ll)
+    initialize_logging(log_level=args.loglevel)
     pings = AllowedMentions.everyone() if args.allow_pings else AllowedMentions.none()
     botstrap.run_bot(bot_class="qibot.bot.QiBot", allowed_mentions=pings)
 
