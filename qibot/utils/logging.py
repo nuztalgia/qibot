@@ -1,6 +1,7 @@
 import logging
 import sys
-from typing import Callable, Final, TypeAlias
+from collections.abc import Callable
+from typing import Final, TypeAlias
 
 _LogMethod: TypeAlias = Callable[[str], None]
 

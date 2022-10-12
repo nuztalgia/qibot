@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Any, Final, Type, overload
+from typing import Any, Final, overload
 
 import json5
 
@@ -17,7 +17,7 @@ _JSON_FILENAME: Final[Template] = Template("${filename}.json")
 @overload
 def load_json_from_file(
     filename: str,
-    data_type: Type[dict],
+    data_type: type[dict],
     *,
     lowercase_dict_keys: bool = False,
     create_if_missing: bool = False,
@@ -29,7 +29,7 @@ def load_json_from_file(
 @overload
 def load_json_from_file(
     filename: str,
-    data_type: Type[list],
+    data_type: type[list],
     *,
     lowercase_dict_keys: bool = False,
     create_if_missing: bool = False,
@@ -40,7 +40,7 @@ def load_json_from_file(
 
 def load_json_from_file(
     filename: str,
-    data_type: Type[dict | list],
+    data_type: type[dict | list],
     *,
     lowercase_dict_keys: bool = False,
     create_if_missing: bool = False,

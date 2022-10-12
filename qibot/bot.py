@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Final, Optional
+from typing import Final
 
 from discord import (
     Activity,
@@ -63,7 +63,7 @@ class QiBot(Bot):
             activity=Activity(type=ActivityType.watching, name="everything.")
         )
 
-    def _get_server_name(self) -> Optional[str]:
+    def _get_server_name(self) -> str | None:
         if len(self.guilds) != 1:
             Log.e(
                 f"This bot account is a member of {len(self.guilds)} servers."

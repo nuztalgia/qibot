@@ -1,4 +1,5 @@
-from typing import Final, Iterable, Type
+from collections.abc import Iterable
+from typing import Final
 
 from discord import Embed, File
 
@@ -59,7 +60,7 @@ def _assemble_embed_data(
     return cls(**params)
 
 
-_MIXIN_MATCHER: Final[dict[Type[EmbedData], set[str]]] = {
+_MIXIN_MATCHER: Final[dict[type[EmbedData], set[str]]] = {
     FieldsMixin: {"fields"},
     TextMixin: {"text"},
     ThumbnailMixin: {"thumbnail"},

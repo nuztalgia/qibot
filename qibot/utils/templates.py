@@ -1,6 +1,7 @@
 import re
 import string
-from typing import Callable, Final
+from collections.abc import Callable
+from typing import Final
 
 _TEMPLATE_KEY_PATTERN: Final[re.Pattern] = re.compile(r"\${?(\w*)", re.ASCII)
 

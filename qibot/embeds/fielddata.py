@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Final, Iterable, NamedTuple, TypeAlias
+from collections.abc import Iterable
+from typing import Final, NamedTuple, TypeAlias
 
 _FieldContent: TypeAlias = str | Iterable[str] | None
 _PartialFieldData: TypeAlias = tuple[str, str, _FieldContent]
