@@ -8,7 +8,7 @@ setup(
     },
     install_requires=[
         "aiohttp ==3.8.3",
-        "botstrap >=0.2.3",
+        "botstrap >=0.2.4",
         "humanize ==4.4.0",
         "json5 ==0.9.10",
         "pillow ==9.2.0",
